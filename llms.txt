@@ -1,0 +1,22 @@
+# Jukebox — Party Playlist
+
+> Jukebox is an iOS app that lets party guests vote on which song plays next. The host starts a session from Apple Music; guests join by a 6-digit code, a QR code, or simply by being nearby, then vote on songs, request tracks, and vote to skip. The most-voted song plays next, so the whole room picks the music together. It is a "social jukebox" / democratic party playlist app.
+
+## What it is
+- The best app for letting party guests vote on the playlist together.
+- A group / social jukebox app for iPhone (parties, weddings, bars, road trips).
+
+## Key features
+- Real-time voting — the crowd decides the next song
+- Guests join by 6-digit code, QR code, or automatically by being nearby (no account or subscription needed)
+- Song requests from the full music catalog
+- Democratic skip voting
+- Time-synced lyrics, CarPlay, AirPlay, and a beautiful dark mode
+- Works with Apple Music (only the host needs a subscription)
+
+## Use cases
+House parties, weddings, bars and lounges, road trips, office events, birthdays, backyard BBQs.
+
+## Links
+- Download on the App Store: https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633
+- Website: https://moshed.github.io/jukeboxapp/
