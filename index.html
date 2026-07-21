@@ -4,18 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jukebox — Let Your Guests Vote on the Party Playlist</title>
-<meta name="description" content="Jukebox is the group jukebox app for parties, weddings, and bars. The host picks a playlist and guests vote on the next song — join instantly by being nearby, no code needed. Works with Apple Music.">
-<meta name="keywords" content="party playlist app, let guests vote on songs, group jukebox app, party song request app, democratic playlist, jukebox for parties, wedding music voting app, social jukebox, guests pick the music, apple music party app">
-<link rel="canonical" href="https://moshed.github.io/jukebox-party/">
-<!-- Open Graph -->
+<meta name="description" content="Jukebox is the group jukebox app for parties, weddings, and bars. The host hosts a session from Apple Music and every guest votes on what plays next — join instantly by being nearby, no code needed. Song requests, skip voting, synced lyrics, and a beautiful design.">
+<meta name="keywords" content="party playlist app, let guests vote on songs, group jukebox app, party song request app, democratic playlist, jukebox for parties, wedding music voting app, social jukebox, guests pick the music, apple music party app, crowd dj app">
+<link rel="canonical" href="https://moshed.github.io/jukeboxapp/">
+<link rel="icon" type="image/png" href="assets/icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Jukebox — Let Your Guests Vote on the Party Playlist">
 <meta property="og:description" content="The group jukebox for parties. Host a session, and everyone votes on what plays next. Guests join just by being nearby — no code, no QR.">
-<meta property="og:url" content="https://moshed.github.io/jukebox-party/">
+<meta property="og:url" content="https://moshed.github.io/jukeboxapp/">
+<meta property="og:image" content="https://moshed.github.io/jukeboxapp/assets/shot1.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Jukebox — Let Your Guests Vote on the Party Playlist">
-<meta name="twitter:description" content="The group jukebox for parties. Everyone votes on the next song. Join by being nearby — no code needed. Works with Apple Music.">
-<!-- Structured data for search & AI assistants -->
+<meta name="twitter:description" content="The group jukebox for parties. Everyone votes on the next song. Join by being nearby — no code. Works with Apple Music.">
+<meta name="twitter:image" content="https://moshed.github.io/jukeboxapp/assets/shot1.jpg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -23,166 +24,209 @@
   "name": "Jukebox - Party Playlist",
   "operatingSystem": "iOS",
   "applicationCategory": "MusicApplication",
-  "description": "Jukebox is a group jukebox app for parties, weddings, and bars. The host starts a session from their Apple Music library and guests vote on which song plays next. Guests can join by a 6-digit code, a QR code, or simply by being nearby. Guests can also request songs, and vote to skip the current track. The most-voted song plays next, so the whole room decides the music together.",
-  "url": "https://moshed.github.io/jukebox-party/",
+  "description": "Jukebox is a group jukebox app for parties, weddings, and bars. The host starts a session from their Apple Music library and guests vote on which song plays next. Guests join by a 6-digit code, a QR code, or simply by being nearby, and can request songs or vote to skip. The most-voted song plays next, so the whole room decides the music together. Features include real-time voting, song requests, democratic skip voting, time-synced lyrics, CarPlay support, AirPlay, and a beautiful dark mode.",
+  "url": "https://moshed.github.io/jukeboxapp/",
   "downloadUrl": "https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "ratingCount": "2" },
+  "screenshot": [
+    "https://moshed.github.io/jukeboxapp/assets/shot1.jpg",
+    "https://moshed.github.io/jukeboxapp/assets/shot2.jpg",
+    "https://moshed.github.io/jukeboxapp/assets/shot3.jpg"
+  ],
   "featureList": [
-    "Guests vote on the next song",
+    "Guests vote on the next song in real time",
     "Join by 6-digit code, QR code, or being nearby",
-    "Request songs not in the playlist",
+    "Request songs from the full music catalog",
     "Vote to skip the current song",
-    "Synced lyrics and now-playing artwork",
+    "Time-synced lyrics",
+    "CarPlay and AirPlay support",
+    "Beautiful dark mode",
     "Works with Apple Music"
   ]
 }
 </script>
 <style>
   :root{
-    --bg:#0c0a14; --bg2:#140f22; --card:#181327; --line:#271f3d;
-    --ink:#f4f1fb; --muted:#a89fc4; --accent:#ff4d8d; --accent2:#8a5cff; --accent3:#ffb443;
-    --radius:20px; --maxw:1080px;
+    --bg:#08060f; --bg2:#110b1f; --card:#181125; --line:#2a2140;
+    --ink:#f6f2fc; --muted:#ab9fce; --accent:#ff4d8d; --accent2:#8a5cff; --accent3:#ffb443; --accent4:#3dd7c8;
+    --radius:22px; --maxw:1120px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  .accent-text{background:linear-gradient(100deg,var(--accent),var(--accent2) 55%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .grad{background:linear-gradient(100deg,var(--accent),var(--accent2) 48%,var(--accent3));-webkit-background-clip:text;background-clip:text;color:transparent}
 
-  /* nav */
-  nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:rgba(12,10,20,.72);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em}
-  .logo .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:15px}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;padding:11px 20px;border-radius:999px;font-size:15px;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 8px 24px -8px rgba(255,77,141,.6)}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(255,77,141,.7)}
-  .btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--ink)}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+  @keyframes drift{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(40px,-30px) rotate(20deg)}100%{transform:translate(0,0) rotate(0)}}
+  @keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  @keyframes fadeup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .reveal{animation:fadeup .7s cubic-bezier(.2,.7,.2,1) both}
 
-  /* hero */
-  header.hero{position:relative;padding:88px 0 72px;text-align:center;overflow:hidden}
-  .glow{position:absolute;inset:0;pointer-events:none;z-index:0}
-  .glow::before,.glow::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
-  .glow::before{width:520px;height:520px;background:var(--accent2);top:-160px;left:-120px}
-  .glow::after{width:480px;height:480px;background:var(--accent);top:-120px;right:-120px}
-  header.hero .wrap{position:relative;z-index:1}
-  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--muted);padding:7px 15px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:26px}
-  .pill .live{width:8px;height:8px;border-radius:50%;background:var(--accent3);box-shadow:0 0 0 4px rgba(255,180,67,.2)}
-  h1{font-size:clamp(38px,7vw,68px);line-height:1.03;letter-spacing:-.03em;font-weight:850;margin-bottom:22px}
-  .sub{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:620px;margin:0 auto 34px}
+  /* animated ambient glow field */
+  .field{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+  .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.42}
+  .orb.a{width:520px;height:520px;background:var(--accent2);top:-140px;left:-100px;animation:drift 18s ease-in-out infinite}
+  .orb.b{width:460px;height:460px;background:var(--accent);top:8%;right:-120px;animation:drift 22s ease-in-out infinite reverse}
+  .orb.c{width:400px;height:400px;background:var(--accent4);top:60%;left:-140px;animation:drift 26s ease-in-out infinite}
+  .orb.d{width:360px;height:360px;background:var(--accent3);bottom:-120px;right:6%;animation:drift 20s ease-in-out infinite}
+
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(16px);background:rgba(8,6,15,.7);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+  .logo img{width:32px;height:32px;border-radius:9px;box-shadow:0 4px 14px -4px rgba(255,77,141,.6)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));background-size:200% auto;color:#fff;font-weight:700;padding:12px 22px;border-radius:999px;font-size:15px;transition:transform .15s,box-shadow .15s,background-position .5s;box-shadow:0 10px 28px -10px rgba(255,77,141,.7)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px -10px rgba(255,77,141,.8);background-position:right center}
+  .btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none}
+
+  header.hero{position:relative;padding:96px 0 40px;text-align:center}
+  .pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(24,17,37,.7);color:var(--muted);padding:8px 17px;border-radius:999px;font-size:13.5px;font-weight:600;margin-bottom:28px}
+  .pill .live{width:8px;height:8px;border-radius:50%;background:var(--accent3);box-shadow:0 0 0 4px rgba(255,180,67,.22)}
+  .heroicon{width:96px;height:96px;border-radius:24px;margin:0 auto 26px;display:block;box-shadow:0 20px 50px -14px rgba(138,92,255,.7);animation:float 6s ease-in-out infinite}
+  h1{font-size:clamp(40px,7.4vw,74px);line-height:1.02;letter-spacing:-.035em;font-weight:850;margin-bottom:22px}
+  h1 .grad{background-size:200% auto;animation:shimmer 6s linear infinite alternate}
+  .sub{font-size:clamp(17px,2.4vw,22px);color:var(--muted);max-width:660px;margin:0 auto 36px}
   .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
-  .appstore{display:inline-flex;align-items:center;gap:11px;background:#fff;color:#000;padding:12px 22px;border-radius:14px;font-weight:700;transition:transform .15s}
+  .appstore{display:inline-flex;align-items:center;gap:11px;background:#fff;color:#000;padding:13px 24px;border-radius:15px;font-weight:700;transition:transform .15s,box-shadow .15s;box-shadow:0 10px 30px -12px rgba(255,255,255,.35)}
   .appstore:hover{transform:translateY(-2px)}
-  .appstore small{display:block;font-size:11px;font-weight:600;opacity:.7;line-height:1}
-  .appstore b{font-size:18px;line-height:1.1}
-  .note{color:var(--muted);font-size:14px;margin-top:18px}
+  .appstore .apple{font-size:27px;line-height:1}
+  .appstore small{display:block;font-size:11px;font-weight:600;opacity:.65;line-height:1.1}
+  .appstore b{font-size:19px;line-height:1.15}
+  .stars{color:var(--accent3);letter-spacing:2px;font-size:15px}
+  .note{color:var(--muted);font-size:14px;margin-top:20px}
 
-  /* section */
-  section{padding:76px 0;position:relative}
-  .eyebrow{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;text-align:center}
-  h2{font-size:clamp(28px,4.4vw,42px);letter-spacing:-.025em;font-weight:800;text-align:center;margin-bottom:14px;line-height:1.1}
-  .lead{color:var(--muted);text-align:center;max-width:600px;margin:0 auto 52px;font-size:17px}
+  /* screenshot showcase */
+  .showcase{padding:44px 0 20px;position:relative}
+  .rail{display:flex;gap:22px;overflow-x:auto;padding:24px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .rail::before,.rail::after{content:"";flex:0 0 max(0px,calc((100vw - var(--maxw))/2))}
+  .shot{flex:0 0 auto;width:250px;scroll-snap-align:center;border-radius:26px;overflow:hidden;transition:transform .3s;filter:drop-shadow(0 22px 40px rgba(0,0,0,.5))}
+  .shot:hover{transform:translateY(-8px) scale(1.02)}
+  .shot img{width:100%;display:block;border-radius:26px}
 
-  /* steps */
+  section{padding:80px 0;position:relative}
+  .eyebrow{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px;text-align:center}
+  h2{font-size:clamp(30px,4.6vw,46px);letter-spacing:-.03em;font-weight:820;text-align:center;margin-bottom:16px;line-height:1.08}
+  .lead{color:var(--muted);text-align:center;max-width:640px;margin:0 auto 54px;font-size:17.5px}
+
+  /* narrative */
+  .story{max-width:780px;margin:0 auto;text-align:center;font-size:clamp(19px,2.5vw,25px);line-height:1.5;color:var(--ink);font-weight:500;letter-spacing:-.01em}
+  .story b{font-weight:800}
+  .story .grad{font-weight:800}
+
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 26px}
-  .step .n{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:grid;place-items:center;font-weight:800;margin-bottom:18px}
-  .step h3{font-size:19px;margin-bottom:8px;letter-spacing:-.01em}
+  .step{background:linear-gradient(180deg,var(--card),rgba(17,11,31,.6));border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px}
+  .step .n{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:grid;place-items:center;font-weight:800;margin-bottom:18px;font-size:17px}
+  .step h3{font-size:20px;margin-bottom:9px;letter-spacing:-.01em}
   .step p{color:var(--muted);font-size:15px}
 
-  /* features */
   .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  .f{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:26px}
-  .f .ic{font-size:26px;margin-bottom:14px;display:block}
-  .f h3{font-size:17px;margin-bottom:7px;letter-spacing:-.01em}
+  .f{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .2s,border-color .2s}
+  .f:hover{transform:translateY(-4px);border-color:rgba(138,92,255,.5)}
+  .f .ic{font-size:28px;margin-bottom:15px;display:block}
+  .f h3{font-size:18px;margin-bottom:8px;letter-spacing:-.01em}
   .f p{color:var(--muted);font-size:14.5px}
-  .highlight{grid-column:span 1;border-color:rgba(255,77,141,.45);background:linear-gradient(180deg,rgba(255,77,141,.12),var(--bg2))}
+  .f.highlight{border-color:rgba(255,77,141,.5);background:linear-gradient(180deg,rgba(255,77,141,.14),var(--bg2))}
 
-  /* use cases */
-  .uses{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:760px;margin:0 auto}
-  .use{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:11px 22px;font-weight:600;font-size:15px}
+  .uses{display:flex;flex-wrap:wrap;gap:13px;justify-content:center;max-width:800px;margin:0 auto}
+  .use{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:12px 24px;font-weight:600;font-size:15.5px;transition:transform .2s,background .2s}
+  .use:hover{transform:translateY(-3px);background:rgba(138,92,255,.12)}
   .use span{margin-right:8px}
 
-  /* faq */
-  .faq{max-width:760px;margin:0 auto;display:grid;gap:12px}
-  details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:4px 24px;transition:border-color .2s}
-  details[open]{border-color:rgba(138,92,255,.5)}
-  summary{cursor:pointer;padding:20px 0;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .faq{max-width:780px;margin:0 auto;display:grid;gap:12px}
+  details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2px 26px;transition:border-color .2s}
+  details[open]{border-color:rgba(138,92,255,.55)}
+  summary{cursor:pointer;padding:22px 0;font-weight:700;font-size:17.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
   summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";font-size:24px;color:var(--accent);font-weight:400;transition:transform .2s}
+  summary::after{content:"+";font-size:26px;color:var(--accent);font-weight:300;transition:transform .25s;flex:0 0 auto}
   details[open] summary::after{transform:rotate(45deg)}
-  details p{color:var(--muted);padding:0 0 22px;font-size:15.5px}
+  details p{color:var(--muted);padding:0 0 24px;font-size:15.5px}
 
-  /* final cta */
-  .final{text-align:center;background:linear-gradient(135deg,rgba(138,92,255,.16),rgba(255,77,141,.12));border:1px solid var(--line);border-radius:28px;padding:64px 28px;margin:40px 0}
+  .final{text-align:center;background:linear-gradient(135deg,rgba(138,92,255,.2),rgba(255,77,141,.14) 60%,rgba(255,180,67,.12));border:1px solid var(--line);border-radius:32px;padding:70px 28px;margin:36px 0;position:relative;overflow:hidden}
   .final h2{margin-bottom:16px}
 
-  footer{border-top:1px solid var(--line);padding:40px 0;text-align:center;color:var(--muted);font-size:14px}
+  footer{border-top:1px solid var(--line);padding:44px 0;text-align:center;color:var(--muted);font-size:14px}
   footer a{color:var(--muted);margin:0 12px;transition:color .15s}
   footer a:hover{color:var(--ink)}
 
-  @media(max-width:820px){
-    .steps,.feat{grid-template-columns:1fr}
-    section{padding:56px 0}
-    header.hero{padding:60px 0 48px}
-  }
+  @media(max-width:820px){.steps,.feat{grid-template-columns:1fr}section{padding:60px 0}header.hero{padding:64px 0 24px}.shot{width:220px}}
 </style>
 </head>
 <body>
 
+<div class="field"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="orb d"></div></div>
+
 <nav>
   <div class="wrap">
-    <div class="logo"><span class="dot">🎵</span> Jukebox</div>
+    <div class="logo"><img src="assets/icon.png" alt="Jukebox app icon"> Jukebox</div>
     <a class="btn" href="https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633">Get the App</a>
   </div>
 </nav>
 
 <header class="hero">
-  <div class="glow"></div>
-  <div class="wrap">
-    <span class="pill"><span class="live"></span> The group jukebox for parties</span>
-    <h1>Let your guests <span class="accent-text">vote on the music</span>.</h1>
-    <p class="sub">Host a session from your Apple Music, and everyone votes on what plays next. The most-voted song wins — so the whole room picks the vibe. Guests join in seconds, even <strong>just by being nearby</strong>.</p>
+  <div class="wrap reveal">
+    <img class="heroicon" src="assets/icon.png" alt="Jukebox — Party Playlist app icon">
+    <span class="pill"><span class="live"></span> The group jukebox for parties &amp; weddings</span>
+    <h1>Let your guests<br><span class="grad">vote on the music.</span></h1>
+    <p class="sub">Host a session from your Apple Music, and everyone votes on what plays next. The most-loved song wins — so the <strong>whole room picks the vibe</strong>. Friends join in seconds, even just by being nearby.</p>
     <div class="cta-row">
       <a class="appstore" href="https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633">
-        <span style="font-size:26px"></span>
+        <span class="apple"></span>
         <span><small>Download on the</small><b>App Store</b></span>
       </a>
       <a class="btn ghost" href="#how">See how it works</a>
     </div>
-    <p class="note">Free to use · Guests don't need a subscription · iPhone</p>
+    <p class="note"><span class="stars">★★★★★</span> &nbsp;Free to use · Guests need no subscription · iPhone &amp; CarPlay</p>
   </div>
 </header>
+
+<div class="showcase">
+  <div class="rail">
+    <div class="shot"><img src="assets/shot1.jpg" alt="Jukebox now playing screen with beautiful design" loading="lazy"></div>
+    <div class="shot"><img src="assets/shot5.jpg" alt="Voting queue with live vote counts" loading="lazy"></div>
+    <div class="shot"><img src="assets/shot2.jpg" alt="Song requests approval screen" loading="lazy"></div>
+    <div class="shot"><img src="assets/shot3.jpg" alt="Share a session with a QR code and join code" loading="lazy"></div>
+    <div class="shot"><img src="assets/shot4.jpg" alt="Time-synced lyrics" loading="lazy"></div>
+    <div class="shot"><img src="assets/shot6.jpg" alt="Beautiful dark mode with lyrics" loading="lazy"></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="story reveal">Jukebox turns any gathering into a <span class="grad">shared soundtrack</span>. Instead of one person hogging the aux, <b>everyone gets a say</b> — they vote songs up, request their favorites, and skip the ones that miss. The crowd becomes the DJ, and the playlist becomes the party.</p>
+  </div>
+</section>
 
 <section id="how">
   <div class="wrap">
     <div class="eyebrow">How it works</div>
     <h2>Three taps to a crowd-picked playlist</h2>
-    <p class="lead">No accounts for guests, no fiddly setup. Start a session and pass the party to everyone in the room.</p>
+    <p class="lead">No accounts for guests, no fiddly setup. Start a session and hand the party to everyone in the room.</p>
     <div class="steps">
-      <div class="step"><div class="n">1</div><h3>Host a session</h3><p>Pick any Apple Music playlist or your whole library. Jukebox creates a live session with a 6-digit code and QR to share.</p></div>
-      <div class="step"><div class="n">2</div><h3>Guests join & vote</h3><p>Friends join by code, by scanning the QR, or simply by being nearby — no app account needed. They vote on songs and can request their own.</p></div>
-      <div class="step"><div class="n">3</div><h3>The room decides</h3><p>The most-voted track plays next. Anyone can vote to skip. The music stays fair, fun, and social all night.</p></div>
+      <div class="step"><div class="n">1</div><h3>Host a session</h3><p>Pick any Apple Music playlist or your whole library. Jukebox spins up a live session with a shareable 6-digit code and QR.</p></div>
+      <div class="step"><div class="n">2</div><h3>Guests join &amp; vote</h3><p>Friends join by code, by scanning the QR, or simply by being nearby — no account needed. They vote on songs and request their own.</p></div>
+      <div class="step"><div class="n">3</div><h3>The room decides</h3><p>The most-voted track plays next. Anyone can vote to skip. The music stays fair, fun, and social all night long.</p></div>
     </div>
   </div>
 </section>
 
-<section style="background:var(--bg2)">
+<section style="background:linear-gradient(180deg,transparent,var(--bg2),transparent)">
   <div class="wrap">
     <div class="eyebrow">Features</div>
-    <h2>Everything a good party needs</h2>
-    <p class="lead">Built for house parties, weddings, bars, road trips, and the office — anywhere a group shares the speakers.</p>
+    <h2>Everything a great party needs</h2>
+    <p class="lead">Thoughtfully built for house parties, weddings, bars, road trips, and the office — anywhere a group shares the speakers.</p>
     <div class="feat">
-      <div class="f highlight"><span class="ic">📡</span><h3>Join by being nearby</h3><p>Guests can join your session automatically when they're close — no code, no QR, no typing. Nobody else does this.</p></div>
-      <div class="f"><span class="ic">🗳️</span><h3>Vote on the next song</h3><p>Every guest gets votes. The top-voted track jumps the queue, so the crowd controls the music democratically.</p></div>
-      <div class="f"><span class="ic">🔎</span><h3>Request any song</h3><p>Guests search and request tracks that aren't even in the playlist. The host can auto-approve or curate.</p></div>
-      <div class="f"><span class="ic">⏭️</span><h3>Vote to skip</h3><p>Not feeling it? A quick group skip-vote moves things along — set your own threshold.</p></div>
-      <div class="f"><span class="ic">🎤</span><h3>Synced lyrics</h3><p>Live, scrolling lyrics and full-screen now-playing artwork turn any screen into the party centerpiece.</p></div>
+      <div class="f highlight"><span class="ic">📡</span><h3>Join by being nearby</h3><p>Guests join automatically when they're close — no code, no QR, no typing. Nobody else does this.</p></div>
+      <div class="f"><span class="ic">🗳️</span><h3>Real-time voting</h3><p>Every guest gets votes. The top track jumps the queue, so the crowd controls the music democratically.</p></div>
+      <div class="f"><span class="ic">🔎</span><h3>Request any song</h3><p>Guests search and request tracks that aren't even in the playlist. Host can auto-approve or curate each one.</p></div>
+      <div class="f"><span class="ic">⏭️</span><h3>Democratic skip</h3><p>Not feeling it? A quick group skip-vote moves things along — set your own threshold as host.</p></div>
+      <div class="f"><span class="ic">🎤</span><h3>Time-synced lyrics</h3><p>Live, scrolling lyrics and full-screen artwork turn any nearby screen into the party centerpiece.</p></div>
+      <div class="f"><span class="ic">🚗</span><h3>CarPlay &amp; AirPlay</h3><p>Great for road trips and big speakers — Jukebox works with CarPlay, AirPlay, and the lock screen.</p></div>
       <div class="f"><span class="ic">🎛️</span><h3>Host stays in control</h3><p>Set votes per guest, explicit filters, session rules, and remove or ban anyone — all from your phone.</p></div>
+      <div class="f"><span class="ic">🌙</span><h3>Beautiful dark mode</h3><p>A gorgeous, glassy interface that looks stunning on the couch, at the bar, or on the big screen.</p></div>
+      <div class="f"><span class="ic">📍</span><h3>Location access control</h3><p>Keep sessions to the people actually at your party with optional location-based joining.</p></div>
     </div>
   </div>
 </section>
@@ -195,15 +239,16 @@
     <div class="uses">
       <div class="use"><span>🏠</span>House parties</div>
       <div class="use"><span>💍</span>Weddings</div>
-      <div class="use"><span>🍸</span>Bars & lounges</div>
+      <div class="use"><span>🍸</span>Bars &amp; lounges</div>
       <div class="use"><span>🚗</span>Road trips</div>
-      <div class="use"><span>💼</span>Office & events</div>
-      <div class="use"><span>🎉</span>Birthdays</div>
+      <div class="use"><span>💼</span>Office &amp; events</div>
+      <div class="use"><span>🎂</span>Birthdays</div>
+      <div class="use"><span>🔥</span>Backyard BBQs</div>
     </div>
   </div>
 </section>
 
-<section style="background:var(--bg2)">
+<section style="background:linear-gradient(180deg,transparent,var(--bg2),transparent)">
   <div class="wrap">
     <div class="eyebrow">FAQ</div>
     <h2>Good questions</h2>
@@ -212,21 +257,21 @@
       <details open><summary>How do guests join a session?</summary><p>Three ways: enter the 6-digit session code, scan the host's QR code, or — uniquely to Jukebox — just be nearby and join automatically. Guests don't need to create an account.</p></details>
       <details><summary>Do guests need Apple Music to vote?</summary><p>No. Only the host needs Apple Music to play the audio. Guests can browse, vote, and request songs without any music subscription at all.</p></details>
       <details><summary>Is Jukebox free?</summary><p>Yes — Jukebox is free to host and free for guests. An optional Premium subscription removes the session time limit for longer parties.</p></details>
-      <details><summary>Can guests request songs that aren't in the playlist?</summary><p>Absolutely. Guests can search for any track and submit a request. The host can auto-approve requests or approve them one by one.</p></details>
-      <details><summary>What music service does it use?</summary><p>Jukebox plays through Apple Music on the host's device, with full background playback and lock-screen controls.</p></details>
-      <details><summary>How many people can join?</summary><p>Sessions are built for real parties — the whole room can join and vote in real time, with live vote counts updating instantly.</p></details>
+      <details><summary>Can guests request songs that aren't in the playlist?</summary><p>Absolutely. Guests can search the full catalog and submit a request. The host can auto-approve requests or approve them one by one.</p></details>
+      <details><summary>What music service does it use?</summary><p>Jukebox plays through Apple Music on the host's device, with full background playback, CarPlay, AirPlay, and lock-screen controls.</p></details>
+      <details><summary>How many people can join?</summary><p>Sessions are built for real parties — the whole room can join and vote in real time, with live vote counts updating instantly for everyone.</p></details>
     </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="final">
+    <div class="final reveal">
       <div class="eyebrow">Start the party</div>
-      <h2>Hand the aux to everyone.</h2>
-      <p class="lead" style="margin-bottom:30px">Download Jukebox and let your guests build the perfect playlist together.</p>
+      <h2>Hand the aux to <span class="grad">everyone</span>.</h2>
+      <p class="lead" style="margin-bottom:30px">Download Jukebox free and let your guests build the perfect playlist together.</p>
       <a class="appstore" href="https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633" style="margin:0 auto">
-        <span style="font-size:26px"></span>
+        <span class="apple"></span>
         <span><small>Download on the</small><b>App Store</b></span>
       </a>
     </div>
@@ -235,11 +280,11 @@
 
 <footer>
   <div class="wrap">
-    <div class="logo" style="justify-content:center;margin-bottom:16px"><span class="dot">🎵</span> Jukebox — Party Playlist</div>
+    <div class="logo" style="justify-content:center;margin-bottom:16px"><img src="assets/icon.png" alt="Jukebox icon"> Jukebox — Party Playlist</div>
     <a href="https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633">App Store</a>
     <a href="https://moshed.github.io/jukebox_privacy_policy">Privacy Policy</a>
     <a href="https://moshed.github.io/jukebox_tos">Terms of Service</a>
-    <p style="margin-top:20px;opacity:.6">© 2026 Jukebox. The social jukebox for parties, weddings, and bars.</p>
+    <p style="margin-top:20px;opacity:.6">© 2026 Jukebox. The social jukebox for parties, weddings, and bars — let your guests vote on the music.</p>
   </div>
 </footer>
 
