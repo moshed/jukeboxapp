@@ -24,4 +24,4 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
-Sitemap: https://moshed.github.io/jukeboxapp/sitemap.xml
+Sitemap: https://jukebox.dancykier.com/sitemap.xml
