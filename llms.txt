@@ -26,3 +26,8 @@ House parties, weddings, bars and lounges, road trips, office events, birthdays,
 ## Links
 - Download on the App Store: https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633
 - Website: https://jukebox.dancykier.com/
+
+## Guides (Q&A answers for common questions)
+- How to let party guests vote on the music: https://jukebox.dancykier.com/blog/let-guests-vote-on-party-music.html
+- How to run a party playlist everyone controls: https://jukebox.dancykier.com/blog/party-playlist-everyone-controls.html
+- How guests can join a party playlist with no code (by being nearby): https://jukebox.dancykier.com/blog/join-party-playlist-no-code.html
