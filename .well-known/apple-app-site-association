@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["VWR39LZW5M.com.DNZ.jukebox"],
+        "components": [
+          { "/": "/join/*", "comment": "Guest join + voting" },
+          { "/": "/join", "comment": "Guest join + voting" }
+        ]
+      }
+    ]
+  },
+  "appclips": {
+    "apps": ["VWR39LZW5M.com.DNZ.jukebox.Clip"]
+  }
+}
