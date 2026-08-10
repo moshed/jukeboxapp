@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jukebox — Party Display</title>
+<meta name="description" content="Put your Jukebox party on any TV. Now playing, live votes, lyrics and a join code.">
+<link rel="icon" href="../assets/icon.png">
+<style>
+  :root{
+    --bg1:#1a1030; --bg2:#0c0718; --text:#f4f0ff; --muted:#a99fc7;
+    --accent:#8b5cf6; --accent2:#ec4899;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--text);
+    background:linear-gradient(180deg,var(--bg1),var(--bg2) 60%);
+    /* TVs overscan; keep everything inside a safe margin */
+    padding:3vh 3vw;
+  }
+  body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(90px);z-index:0}
+  body::before{width:60vw;height:60vw;left:-15vw;top:-15vw;background:rgba(139,92,246,.30)}
+  body::after{width:45vw;height:45vw;right:-10vw;top:-12vw;background:rgba(236,72,153,.22)}
+
+  /* ---- join screen ---- */
+  #join{position:relative;z-index:1;height:94vh;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;gap:2.2vh}
+  #join h1{font-size:5vh;font-weight:850;letter-spacing:-.02em}
+  #join p{color:var(--muted);font-size:2.2vh}
+  #code{font-size:5vh;font-weight:800;letter-spacing:.3em;text-align:center;text-transform:uppercase;
+        padding:1.6vh 2vw;border-radius:14px;background:rgba(255,255,255,.07);
+        border:1px solid rgba(255,255,255,.14);color:var(--text);outline:none;width:min(9ch,80vw)}
+  #code:focus{border-color:var(--accent)}
+  #go{font-size:2.4vh;font-weight:700;padding:1.5vh 4vw;border:0;border-radius:14px;color:#fff;cursor:pointer;
+      background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .err{color:#fca5a5;font-size:2vh;min-height:2.4vh}
+
+  /* ---- display ---- */
+  #display{display:none;position:relative;z-index:1;height:94vh;gap:3vw}
+  #display.on{display:grid;grid-template-columns:1fr 1fr}
+  .col{min-width:0;display:flex;flex-direction:column}
+  .lbl{font-size:1.7vh;font-weight:800;letter-spacing:.22em;color:rgba(236,72,153,.92);margin-bottom:1.4vh}
+  .lbl.dim{color:rgba(255,255,255,.5)}
+  .head{display:flex;align-items:center;gap:1.4vw;flex-wrap:wrap}
+
+  #art{width:min(34vh,88%);aspect-ratio:1;border-radius:2.2vh;object-fit:cover;
+       box-shadow:0 2.4vh 5vh rgba(0,0,0,.5);background:rgba(255,255,255,.06)}
+  #title{font-size:4.2vh;font-weight:800;line-height:1.12;margin-top:2.2vh}
+  #artist{font-size:2.6vh;color:var(--muted);margin-top:.6vh}
+  #votes{margin-top:1.6vh;display:none;align-items:center;gap:.7vw;font-size:2vh;font-weight:600;
+         background:rgba(255,255,255,.10);padding:1vh 1.4vw;border-radius:99px;width:fit-content}
+  #lyrics{margin-top:2.4vh}
+  #lyr-now{font-size:3.2vh;font-weight:700;line-height:1.25}
+  #lyr-next{font-size:2.3vh;font-weight:500;color:rgba(255,255,255,.38);margin-top:.8vh}
+
+  .row{display:flex;align-items:center;gap:1.2vw;background:rgba(255,255,255,.05);
+       border-radius:1.6vh;padding:1vh 1.2vw;margin-bottom:1.1vh}
+  .row .n{font-size:2.2vh;font-weight:800;color:rgba(255,255,255,.35);width:2.2ch;flex:none}
+  .row img{width:6vh;height:6vh;border-radius:1vh;object-fit:cover;flex:none;background:rgba(255,255,255,.08)}
+  .row .meta{min-width:0;flex:1}
+  .row .t{font-size:2.3vh;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .a{font-size:1.8vh;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{display:flex;align-items:center;gap:.5vw;font-size:2.1vh;font-weight:800;
+        padding:.9vh 1.3vw;border-radius:99px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)}
+  .pill.hot{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+
+  #joincard{margin-top:auto;display:flex;align-items:center;gap:1.6vw;
+            background:rgba(255,255,255,.07);border-radius:2.2vh;padding:1.8vh 1.8vw}
+  #qr{width:13vh;height:13vh;background:#fff;border-radius:1.2vh;padding:1vh;flex:none}
+  #joincard .k{font-size:1.6vh;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.55)}
+  #joincode{font-size:5vh;font-weight:900;letter-spacing:.12em;
+            background:linear-gradient(90deg,var(--accent),var(--accent2));
+            -webkit-background-clip:text;background-clip:text;color:transparent}
+  #joinurl{font-size:1.7vh;color:rgba(255,255,255,.5)}
+
+  #ending{display:none;align-items:center;gap:.8vw;padding:1vh 1.5vw;border-radius:99px;
+          background:linear-gradient(90deg,#f59e0b,#ec4899);font-weight:800;font-size:1.9vh}
+  #ending small{display:block;font-weight:500;font-size:1.4vh;opacity:.85}
+  .empty{color:var(--muted);font-size:2.2vh;padding-top:1vh}
+</style>
+</head>
+<body>
+
+<div id="join">
+  <h1>Party Display</h1>
+  <p>Enter the party code shown in the Jukebox app</p>
+  <input id="code" placeholder="CODE" maxlength="6" autocomplete="off" autocapitalize="characters">
+  <button id="go">Show on this screen</button>
+  <div class="err" id="err"></div>
+  <p style="opacity:.6;font-size:1.7vh;max-width:60ch;text-align:center">
+    Your phone keeps playing the music. This screen only shows the party, so your speaker setup is untouched.
+  </p>
+</div>
+
+<div id="display">
+  <div class="col">
+    <div class="head"><div class="lbl">NOW PLAYING</div><div id="ending"></div></div>
+    <img id="art" alt="">
+    <div id="title">Waiting for the next song</div>
+    <div id="artist"></div>
+    <div id="votes"><span>👍</span><span id="votecount"></span></div>
+    <div id="lyrics"><div id="lyr-now"></div><div id="lyr-next"></div></div>
+  </div>
+  <div class="col">
+    <div class="lbl dim">UP NEXT</div>
+    <div id="queue"></div>
+    <div id="joincard">
+      <img id="qr" alt="">
+      <div>
+        <div class="k">JOIN THE PARTY</div>
+        <div id="joincode"></div>
+        <div id="joinurl"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import QRCode from 'https://esm.sh/qrcode@1.5.3';
+
+const URL_='https://qwwztojldmmvqnavxvnf.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3d3p0b2psZG1tdnFuYXZ4dm5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MjgxNTEsImV4cCI6MjA4MjEwNDE1MX0.249N-HRutCLt_UWFlfchmMfemXC_jYjlQCAG6M3YNog';
+const sb=createClient(URL_,KEY);
+const $=id=>document.getElementById(id);
+
+// Free sessions run 120 minutes; the countdown is the host's nudge to upgrade.
+const FREE_LIMIT_S=120*60, WARN_WINDOW_S=15*60;
+
+let session=null, tracks=[], lyrics=[], lyricsSynced=false, lyricsKey='';
+
+const params=new URLSearchParams(location.search);
+const urlCode=(params.get('c')||params.get('code')||location.hash.replace('#','')).toUpperCase().trim();
+if(urlCode){ $('code').value=urlCode; start(urlCode); }
+$('go').onclick=()=>start($('code').value.toUpperCase().trim());
+$('code').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
+$('code').addEventListener('keydown',e=>{ if(e.key==='Enter') $('go').click(); });
+
+async function start(code){
+  if(code.length<4){ $('err').textContent='Enter the party code.'; return; }
+  $('err').textContent='Connecting…';
+  try{
+    // A display is a participant like any guest — that is what RLS checks before
+    // it will return the session's tracks.
+    if(!(await sb.auth.getSession()).data.session) await sb.auth.signInAnonymously();
+    const dev='display-'+(localStorage.getItem('jb_display_id')||(()=>{const d=crypto.randomUUID();localStorage.setItem('jb_display_id',d);return d;})());
+    const {data,error}=await sb.rpc('join_session',{p_session_code:code,p_user_name:'TV Display',p_device_id:dev});
+    if(error) throw error;
+    session=data.session;
+    history.replaceState(null,'','?c='+code);
+    await loadTracks();
+    $('join').style.display='none';
+    $('display').classList.add('on');
+    renderJoinCard(); renderAll();
+    subscribe(); setInterval(tick,250); setInterval(loadTracks,15000);
+  }catch(e){
+    const m=(e.message||'Could not connect');
+    $('err').textContent=/not found|inactive/i.test(m)?'Party not found. Check the code.':m;
+  }
+}
+
+async function loadTracks(){
+  if(!session) return;
+  const {data}=await sb.from('session_tracks').select('*').eq('session_id',session.id).eq('is_active',true);
+  if(data){ tracks=data; renderAll(); }
+}
+async function refreshSession(){
+  const {data}=await sb.from('sessions').select('*').eq('id',session.id).single();
+  if(data){ session=data; renderAll(); }
+}
+
+function current(){ return tracks.find(t=>t.track_id===session.current_track_id); }
+function upNext(){
+  const cur=current();
+  return tracks.filter(t=>!t.played_at && (!cur||t.id!==cur.id))
+               .sort((a,b)=>(b.vote_count-a.vote_count)||a.created_at.localeCompare(b.created_at))
+               .slice(0,6);
+}
+
+function renderAll(){
+  const c=current();
+  $('art').src=c?.artwork_url||'../assets/icon.png';
+  $('title').textContent=c?.title||'Waiting for the next song';
+  $('artist').textContent=c?.artist||'';
+  const vc=session.current_track_vote_count||0;
+  $('votes').style.display=vc>0?'flex':'none';
+  $('votecount').textContent=vc+' votes';
+
+  const q=upNext();
+  $('queue').innerHTML = q.length ? '' : '<div class="empty">No songs queued yet — scan to add one</div>';
+  q.forEach((t,i)=>{
+    const d=document.createElement('div'); d.className='row';
+    d.innerHTML=`<div class="n">${i+1}</div>
+      <img src="${t.artwork_url||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
+      <div class="meta"><div class="t">${esc(t.title)}</div><div class="a">${esc(t.artist||'')}</div></div>
+      <div class="pill ${t.vote_count>0?'hot':''}"><span>👍</span>${t.vote_count}</div>`;
+    $('queue').appendChild(d);
+  });
+
+  if(c) fetchLyrics(c);
+}
+
+function renderJoinCard(){
+  const link='https://jukebox.dancykier.com/join/?c='+session.code;
+  $('joincode').textContent=session.code;
+  $('joinurl').textContent='Scan, or open jukebox.dancykier.com/join';
+  QRCode.toDataURL(link,{margin:0,width:400}).then(u=>$('qr').src=u).catch(()=>{});
+}
+
+/** Playback position, derived from what the host writes to the session row. */
+function position(){
+  if(!session) return 0;
+  if(session.is_playing && session.track_started_at){
+    return (Date.now()-new Date(session.track_started_at).getTime())/1000;
+  }
+  return session.playback_position||0;
+}
+
+function tick(){
+  // synced lyrics
+  if(lyrics.length && lyricsSynced){
+    const p=position();
+    let i=-1;
+    for(let k=0;k<lyrics.length;k++){ if(lyrics[k].time<=p) i=k; else break; }
+    $('lyr-now').textContent  = i>=0 ? lyrics[i].text : '';
+    $('lyr-next').textContent = i>=0 && lyrics[i+1] ? lyrics[i+1].text : '';
+  }
+  // ending countdown — the same nudge the app shows
+  const el=$('ending');
+  if(session?.created_at){
+    const left=FREE_LIMIT_S-(Date.now()-new Date(session.created_at).getTime())/1000;
+    if(left>0 && left<=WARN_WINDOW_S){
+      const m=Math.floor(left/60), s=Math.floor(left%60);
+      el.innerHTML=`⏳ Party ends in ${m}:${String(s).padStart(2,'0')}<small>Ask the host to go Premium to keep it going</small>`;
+      el.style.display='flex';
+    } else el.style.display='none';
+  }
+}
+
+/** Lyrics from LRCLib, the same source the app uses. */
+async function fetchLyrics(t){
+  const key=t.track_id;
+  if(key===lyricsKey) return;
+  lyricsKey=key; lyrics=[]; lyricsSynced=false;
+  $('lyr-now').textContent=''; $('lyr-next').textContent='';
+  try{
+    const u='https://lrclib.net/api/get?'+new URLSearchParams({track_name:t.title,artist_name:t.artist});
+    const r=await fetch(u); if(!r.ok) return;
+    const d=await r.json();
+    if(d.instrumental){ $('lyr-now').textContent='♪ Instrumental'; return; }
+    if(d.syncedLyrics){
+      lyrics=d.syncedLyrics.split('\n').map(l=>{
+        const m=l.match(/\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)/);
+        return m?{time:+m[1]*60+parseFloat(m[2]),text:m[3]}:null;
+      }).filter(x=>x&&x.text);
+      lyricsSynced=true;
+    } else if(d.plainLyrics){
+      const ls=d.plainLyrics.split('\n').filter(Boolean).slice(0,2);
+      $('lyr-now').textContent=ls[0]||''; $('lyr-next').textContent=ls[1]||'';
+    }
+  }catch(e){}
+}
+
+function subscribe(){
+  sb.channel('d-t-'+session.id).on('postgres_changes',
+    {event:'*',schema:'public',table:'session_tracks',filter:'session_id=eq.'+session.id}, loadTracks).subscribe();
+  sb.channel('d-s-'+session.id).on('postgres_changes',
+    {event:'UPDATE',schema:'public',table:'sessions',filter:'id=eq.'+session.id},
+    p=>{ session={...session,...p.new}; renderAll(); }).subscribe();
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+</script>
+</body>
+</html>
