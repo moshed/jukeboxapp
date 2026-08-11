@@ -94,6 +94,8 @@
   <input id="name" placeholder="Your name (optional)" maxlength="24" autocomplete="off">
   <button id="joinBtn" class="btn">Join Party</button>
   <div class="err" id="joinErr"></div>
+  <a id="tvLink" href="../display/" style="text-align:center;color:var(--muted);font-size:14px;
+     text-decoration:none;margin-top:2px">Showing this on a TV? <b style="color:var(--text)">Open Party Display →</b></a>
 </div>
 
 <!-- VOTE -->
@@ -139,6 +141,8 @@ let myId=null, session=null, tracks=[], myVotes=new Set(), maxVotes=3, refetchT;
 const params=new URLSearchParams(location.search);
 const urlCode=(params.get('c')||params.get('code')||location.hash.replace('#','')).toUpperCase().trim();
 if(urlCode) $('code').value=urlCode;
+if(urlCode) $('tvLink').href='../display/?c='+encodeURIComponent(urlCode);
+$('code').addEventListener('input',()=>{const v=$('code').value.trim();$('tvLink').href='../display/'+(v?('?c='+encodeURIComponent(v)):'');});
 $('name').value=localStorage.getItem('jb_name')||'';
 $('code').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
 $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('name').focus()});
