@@ -92,8 +92,6 @@
   <p style="opacity:.6;font-size:1.7vh;max-width:60ch;text-align:center">
     Your phone keeps playing the music. This screen only shows the party, so your speaker setup is untouched.
   </p>
-  <a id="voteLink" href="../join/" style="color:rgba(255,255,255,.55);font-size:1.7vh;text-decoration:none">
-    Want to vote instead? <b style="color:#fff">Open the voting page →</b></a>
 </div>
 
 <div id="display">
@@ -135,8 +133,7 @@ let session=null, tracks=[], lyrics=[], lyricsSynced=false, lyricsKey='';
 
 const params=new URLSearchParams(location.search);
 const urlCode=(params.get('c')||params.get('code')||location.hash.replace('#','')).toUpperCase().trim();
-if(urlCode){ $('code').value=urlCode; $('voteLink').href='../join/?c='+encodeURIComponent(urlCode); start(urlCode); }
-$('code').addEventListener('input',()=>{const v=$('code').value.trim();$('voteLink').href='../join/'+(v?('?c='+encodeURIComponent(v)):'');});
+if(urlCode){ $('code').value=urlCode; start(urlCode); }
 $('go').onclick=()=>start($('code').value.toUpperCase().trim());
 $('code').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
 $('code').addEventListener('keydown',e=>{ if(e.key==='Enter') $('go').click(); });
