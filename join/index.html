@@ -192,6 +192,11 @@ async function doJoin(){
       const {data:auth,error:ae}=await sb.auth.signInAnonymously();
       if(ae) throw ae; myId=auth.user.id;
     }
+    // postgres_changes is RLS-checked against the socket's own token. Without this the
+    // socket keeps the plain anon key, every row check fails silently and live updates
+    // never arrive.
+    const _s=(await sb.auth.getSession()).data.session;
+    if(_s) sb.realtime.setAuth(_s.access_token);
     let res=await sb.rpc('join_session',{p_session_code:code,p_user_name:name,p_device_id:device});
     if(res.error && /location is required/i.test(res.error.message)){
       const pos=await getLoc();
