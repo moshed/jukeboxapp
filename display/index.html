@@ -159,7 +159,11 @@ async function start(code){
     $('join').style.display='none';
     $('display').classList.add('on');
     renderJoinCard(); renderAll();
-    subscribe(); setInterval(tick,250); setInterval(loadTracks,15000);
+    subscribe(); setInterval(tick,250);
+    // Reconcile with the server periodically. Realtime should carry this and
+    // usually does, but the song lives on the session row and a display that
+    // silently sticks on the wrong song is the worst failure this screen has.
+    setInterval(()=>{ loadTracks(); refreshSession(); }, 15000);
   }catch(e){
     const m=(e.message||'Could not connect');
     $('err').textContent=/not found|inactive/i.test(m)?'Party not found. Check the code.':m;
@@ -195,9 +199,34 @@ function current(){
   return tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id) || null;
 }
 
+// The host publishes the real play order onto `sessions.upcoming`.
+//
+// This page cannot work the order out for itself. After votes, the host orders by a
+// shuffle it runs from `shuffle_seed`, and only the seed reaches the database — never
+// the order it produces. Sorting by votes-then-added looked right and was not: party
+// RNDNQV showed the same six songs all night while 47 different ones played.
 function upNext(){
   const cur=current();
-  return tracks.filter(t=>!t.played_at && (!cur||t.id!==cur.id))
+  const live=new Map(tracks.map(t=>[t.id,t]));
+  const notPlaying=t=>{
+    if(cur && t.id===cur.id) return false;
+    // Ids are unreliable across Apple Music, so check the title too.
+    if(session.current_track_title && t.title===session.current_track_title) return false;
+    return true;
+  };
+
+  if(Array.isArray(session.upcoming) && session.upcoming.length){
+    return session.upcoming.filter(notPlaying)
+      // Votes move between publishes. Prefer the live count when this page has it —
+      // a song further down the list may not be in the 40 rows we loaded, and its
+      // published count is still the best we have.
+      .map(t=>({...t, vote_count: live.get(t.id)?.vote_count ?? t.vote_count ?? 0}))
+      .slice(0,6);
+  }
+
+  // Host is on a build that does not publish yet. Show the old guess rather than
+  // an empty panel.
+  return tracks.filter(t=>!t.played_at).filter(notPlaying)
                .sort((a,b)=>(b.vote_count-a.vote_count)||a.created_at.localeCompare(b.created_at))
                .slice(0,6);
 }
@@ -234,7 +263,7 @@ function renderAll(){
   q.forEach((t,i)=>{
     const d=document.createElement('div'); d.className='row';
     d.innerHTML=`<div class="n">${i+1}</div>
-      <img src="${t.artwork_url||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
+      <img src="${artURL(t.artwork_url)||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
       <div class="meta"><div class="t">${esc(t.title)}</div><div class="a">${esc(t.artist||'')}</div></div>
       <div class="pill ${t.vote_count>0?'hot':''}"><span>❤️</span>${t.vote_count}</div>`;
     $('queue').appendChild(d);

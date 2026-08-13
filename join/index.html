@@ -278,13 +278,31 @@ function currentTrack(){
 }
 
 function sorted(){
-  // Played songs used to stay in the list forever, so the queue looked frozen while
-  // the party moved on. Drop them, and the song playing right now.
   const cur=currentTrack();
-  // Filtering and ordering happen on the server now; just keep the playing song out.
-  return tracks
-    .filter(t=>!t.played_at && (!cur || t.id!==cur.id))
+  const notPlaying=t=>{
+    if(cur && t.id===cur.id) return false;
+    // Apple Music reports a different id for the playing song, so check the title too.
+    if(session.current_track_title && t.title===session.current_track_title) return false;
+    return true;
+  };
+
+  // Everything this page loaded, votable, most-voted first. Filtering and ordering
+  // happen on the server now; just keep the playing song out.
+  const rest=tracks
+    .filter(t=>!t.played_at).filter(notPlaying)
     .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
+
+  // A search asks "where is this song", not "what plays next".
+  if(query) return rest;
+
+  // The host publishes the real play order — see display/index.html for why it cannot
+  // be derived here. Put it on top, then the rest of the party to vote on.
+  const up=Array.isArray(session.upcoming)?session.upcoming.filter(notPlaying):[];
+  if(!up.length) return rest;
+  const live=new Map(tracks.map(t=>[t.id,t]));
+  const seen=new Set(up.map(t=>t.id));
+  return up.map(t=>({...t, ...(live.get(t.id)||{})}))
+           .concat(rest.filter(t=>!seen.has(t.id)));
 }
 function render(){
   const list=$('list'); const s=sorted();
@@ -302,7 +320,7 @@ function render(){
     const playing=session.current_track_id && t.track_id===session.current_track_id;
     const row=document.createElement('div'); row.className='track'+(playing?' playing':'');
     row.innerHTML=`
-      <img src="${t.artwork_url||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
+      <img src="${artURL(t.artwork_url)||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
       <div class="info"><div class="ti">${esc(t.title)}</div><div class="ar">${esc(t.artist||'')}</div></div>
       <button class="vote ${voted?'on':''}" ${(!voted&&remaining<=0)?'disabled':''} data-id="${t.id}">
         <span class="h">${voted?'❤️':'🤍'}</span><span class="n">${t.vote_count||0}</span>
