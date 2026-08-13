@@ -241,6 +241,17 @@ async function refreshSession(){
 }
 
 let query='';
+// Library artwork arrives as musicKit://… which browsers cannot load; the real asset
+// path is in the `aat` parameter.
+function artURL(u){
+  if(!u) return null;
+  if(!u.startsWith('musicKit://')) return u;
+  try{
+    const aat=new URLSearchParams(u.split('?')[1]||'').get('aat');
+    return aat ? 'https://is1-ssl.mzstatic.com/image/thumb/'+aat+'/600x600bb.jpg' : null;
+  }catch(e){ return null; }
+}
+
 function currentTrack(){
   // See display/index.html — session fields are the source of truth for what is
   // playing; this lookup is only used to keep the song out of the votable queue.
@@ -289,7 +300,7 @@ function renderNP(){
   // Session fields first — the playing song is not always in session_tracks.
   const t=session.current_track_title||cur?.title;
   const a=session.current_track_artist||cur?.artist;
-  const art=session.current_track_artwork_url||cur?.artwork_url;
+  const art=artURL(session.current_track_artwork_url)||cur?.artwork_url;
   if(session.current_track_id && t && session.is_playing!==false){
     $('np').style.display='flex'; $('npIdle').style.display='none';
     $('npArt').src=art||'../assets/icon.png';

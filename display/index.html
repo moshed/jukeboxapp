@@ -193,13 +193,25 @@ function upNext(){
 }
 
 
+// Songs from the user's LIBRARY report artwork as musicKit://… which no browser can
+// load. The real Apple asset path is sitting in that URL's `aat` parameter, so rebuild
+// a normal image URL from it.
+function artURL(u){
+  if(!u) return null;
+  if(!u.startsWith('musicKit://')) return u;
+  try{
+    const aat=new URLSearchParams(u.split('?')[1]||'').get('aat');
+    return aat ? 'https://is1-ssl.mzstatic.com/image/thumb/'+aat+'/600x600bb.jpg' : null;
+  }catch(e){ return null; }
+}
+
 function renderAll(){
   const c=current();
   // The session carries the playing song's details now. Prefer them: the song is not
   // always present in session_tracks, and the lookup then blanked the whole panel.
   const npTitle  = session.current_track_title  || c?.title;
   const npArtist = session.current_track_artist || c?.artist;
-  const npArt    = session.current_track_artwork_url || c?.artwork_url;
+  const npArt    = artURL(session.current_track_artwork_url) || c?.artwork_url;
   $('art').src=npArt||'../assets/icon.png';
   $('title').textContent=npTitle||'Waiting for the next song';
   $('artist').textContent=npArtist||'';
@@ -218,9 +230,10 @@ function renderAll(){
     $('queue').appendChild(d);
   });
 
-  // Clear the lyrics when we no longer know the song, otherwise the previous song's
-  // words keep scrolling under a blank now-playing panel.
-  if(c){ fetchLyrics(c); }
+  // Lyrics follow whatever is really playing. They used to hang off the
+  // session_tracks lookup, so when that failed there were simply no lyrics even
+  // though the title was right there on the session.
+  if(npTitle){ fetchLyrics({track_id: npTitle+'|'+(npArtist||''), title: npTitle, artist: npArtist||''}); }
   else if(lyricsKey){
     lyricsKey=''; lyrics=[]; lyricsSynced=false;
     $('lyr-now').textContent=''; $('lyr-next').textContent='';
