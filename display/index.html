@@ -172,11 +172,17 @@ async function refreshSession(){
 }
 
 function current(){
-  // Match on either the catalog id or the row id: requested songs and playlist songs
-  // have not always been stored the same way, and a miss here silently blanks the
-  // artwork and title while the vote badge still shows a count.
-  const id=session.current_track_id; if(!id) return null;
-  return tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id) || null;
+  // Ids cannot be trusted here. Apple Music reports a different identifier for the
+  // PLAYING item than the one captured when the playlist was read, so
+  // sessions.current_track_id often matches no row at all (seen live: the session
+  // said i.qQd8QX9hAmPP9l while the same song was stored as i.1YBNkWPFq2XXmJ).
+  // Fall back to the most recently started song, which is what played_at records.
+  const id=session.current_track_id;
+  const byId = id ? (tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id)) : null;
+  if(byId) return byId;
+  const started = tracks.filter(t=>t.played_at)
+                        .sort((a,b)=>new Date(b.played_at)-new Date(a.played_at));
+  return started[0] || null;
 }
 function upNext(){
   const cur=current();
@@ -184,6 +190,10 @@ function upNext(){
                .sort((a,b)=>(b.vote_count-a.vote_count)||a.created_at.localeCompare(b.created_at))
                .slice(0,6);
 }
+
+// Realtime is not always delivering session_tracks updates to this page, and a party
+// display that silently freezes is worse than one that costs a few extra queries.
+setInterval(()=>{ loadTracks(); refreshSession(); }, 12000);
 
 function renderAll(){
   const c=current();

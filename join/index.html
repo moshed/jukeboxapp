@@ -220,6 +220,15 @@ async function enterVote(){
   render(); renderNP();
   subscribe();
 }
+// Same safety net as the display: keep the queue moving even if realtime is silent.
+setInterval(async ()=>{
+  if(!session) return;
+  await loadTracks();
+  const {data}=await sb.from('sessions').select('*').eq('id',session.id).single();
+  if(data) session=data;
+  render(); renderNP();
+}, 12000);
+
 async function loadTracks(){
   const {data,error}=await sb.from('session_tracks').select('*').eq('session_id',session.id).eq('is_active',true);
   if(!error) tracks=data||[];
@@ -236,8 +245,14 @@ async function refreshSession(){
 
 let query='';
 function currentTrack(){
-  const id=session && session.current_track_id; if(!id) return null;
-  return tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id) || null;
+  // See display/index.html: the playing item's id does not match the stored one, so
+  // fall back to the most recently started song.
+  const id=session && session.current_track_id;
+  const byId = id ? (tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id)) : null;
+  if(byId) return byId;
+  const started=tracks.filter(t=>t.played_at)
+                      .sort((a,b)=>new Date(b.played_at)-new Date(a.played_at));
+  return started[0]||null;
 }
 // Match on title or artist, case- and accent-insensitive so "beyonce" finds "Beyoncé".
 function norm(v){
