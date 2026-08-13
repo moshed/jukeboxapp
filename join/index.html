@@ -234,12 +234,21 @@ async function refreshSession(){
 }
 
 let query='';
+function currentTrack(){
+  const id=session && session.current_track_id; if(!id) return null;
+  return tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id) || null;
+}
 // Match on title or artist, case- and accent-insensitive so "beyonce" finds "Beyoncé".
 function norm(v){
   return (v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 function sorted(){
-  const list=[...tracks].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
+  // Played songs used to stay in the list forever, so the queue looked frozen while
+  // the party moved on. Drop them, and the song playing right now.
+  const cur=currentTrack();
+  const list=tracks
+    .filter(t=>!t.played_at && (!cur || t.id!==cur.id))
+    .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
   if(!query) return list;
   const q=norm(query);
   return list.filter(t=>norm(t.title).includes(q) || norm(t.artist).includes(q));
@@ -270,7 +279,7 @@ function render(){
   }
 }
 function renderNP(){
-  const cur=tracks.find(t=>t.track_id===session.current_track_id);
+  const cur=currentTrack();
   if(session.current_track_id && cur && session.is_playing!==false){
     $('np').style.display='flex'; $('npIdle').style.display='none';
     $('npArt').src=cur.artwork_url||'../assets/icon.png'; $('npTitle').textContent=cur.title;
