@@ -82,6 +82,13 @@
   .spin{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;
     animation:sp .8s linear infinite;margin:40px auto}
   @keyframes sp{to{transform:rotate(360deg)}}
+
+  .searchbar{position:relative;display:flex;align-items:center;gap:8px;margin:0 0 14px}
+  .searchbar .mag{position:absolute;left:14px;font-size:15px;opacity:.65;pointer-events:none}
+  .searchbar input{padding:13px 40px 13px 40px;font-size:16px}
+  .searchbar button{position:absolute;right:8px;width:28px;height:28px;border:0;cursor:pointer;
+    border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:13px;line-height:1}
+  .noresult{padding:26px 8px;text-align:center;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -117,6 +124,12 @@
       <h2 id="partyName">The Queue</h2>
       <div class="remain" id="remain"></div>
     </div>
+    <div class="searchbar">
+      <span class="mag">🔎</span>
+      <input id="q" type="search" placeholder="Search this party's songs" autocomplete="off"
+             autocorrect="off" spellcheck="false" aria-label="Search songs">
+      <button id="qclear" type="button" aria-label="Clear search" hidden>✕</button>
+    </div>
     <div id="list"><div class="spin"></div></div>
   </div>
 </div>
@@ -139,6 +152,17 @@ let myId=null, session=null, tracks=[], myVotes=new Set(), maxVotes=3, refetchT;
 
 // prefill code from ?c= / #CODE, and name from storage
 const params=new URLSearchParams(location.search);
+document.addEventListener('input',e=>{
+  if(e.target.id!=='q') return;
+  query=e.target.value.trim();
+  document.getElementById('qclear').hidden=!query;
+  render();
+});
+document.addEventListener('click',e=>{
+  if(e.target.id!=='qclear') return;
+  const box=document.getElementById('q');
+  box.value=''; query=''; e.target.hidden=true; render(); box.focus();
+});
 const urlCode=(params.get('c')||params.get('code')||location.hash.replace('#','')).toUpperCase().trim();
 if(urlCode) $('code').value=urlCode;
 if(urlCode) $('tvLink').href='../display/?c='+encodeURIComponent(urlCode);
@@ -209,11 +233,24 @@ async function refreshSession(){
   if(data){session=data; if(!session.is_active){toast('This party has ended');} }
 }
 
+let query='';
+// Match on title or artist, case- and accent-insensitive so "beyonce" finds "Beyoncé".
+function norm(v){
+  return (v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
 function sorted(){
-  return [...tracks].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
+  const list=[...tracks].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
+  if(!query) return list;
+  const q=norm(query);
+  return list.filter(t=>norm(t.title).includes(q) || norm(t.artist).includes(q));
 }
 function render(){
   const list=$('list'); const s=sorted();
+  if(query && !s.length){
+    list.innerHTML='<div class="noresult">No songs match \u201C'+esc(query)+'\u201D</div>';
+    $('remain').innerHTML='';
+    return;
+  }
   const remaining=Math.max(0,maxVotes-myVotes.size);
   $('remain').innerHTML=`<b>${remaining}</b> vote${remaining===1?'':'s'} left`;
   if(!s.length){list.innerHTML='<div class="empty">No songs in the queue yet.</div>';return;}
