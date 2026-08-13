@@ -145,6 +145,11 @@ async function start(code){
     // A display is a participant like any guest — that is what RLS checks before
     // it will return the session's tracks.
     if(!(await sb.auth.getSession()).data.session) await sb.auth.signInAnonymously();
+    // postgres_changes is RLS-checked against the socket's token. Without this the
+    // socket can keep the plain anon key and every row-level check fails silently,
+    // so updates simply never arrive.
+    const _s=(await sb.auth.getSession()).data.session;
+    if(_s) sb.realtime.setAuth(_s.access_token);
     const dev='display-'+(localStorage.getItem('jb_display_id')||(()=>{const d=crypto.randomUUID();localStorage.setItem('jb_display_id',d);return d;})());
     const {data,error}=await sb.rpc('join_session',{p_session_code:code,p_user_name:'TV Display',p_device_id:dev});
     if(error) throw error;
@@ -172,18 +177,14 @@ async function refreshSession(){
 }
 
 function current(){
-  // Ids cannot be trusted here. Apple Music reports a different identifier for the
-  // PLAYING item than the one captured when the playlist was read, so
-  // sessions.current_track_id often matches no row at all (seen live: the session
-  // said i.qQd8QX9hAmPP9l while the same song was stored as i.1YBNkWPFq2XXmJ).
-  // Fall back to the most recently started song, which is what played_at records.
-  const id=session.current_track_id;
-  const byId = id ? (tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id)) : null;
-  if(byId) return byId;
-  const started = tracks.filter(t=>t.played_at)
-                        .sort((a,b)=>new Date(b.played_at)-new Date(a.played_at));
-  return started[0] || null;
+  // Ids cannot be relied on: Apple Music reports a different identifier for the
+  // playing item than the one stored when the playlist was read. The host now writes
+  // the real title/artist/artwork onto the session, which renderAll() prefers. This
+  // lookup is only for votes and for excluding the song from the queue.
+  const id=session.current_track_id; if(!id) return null;
+  return tracks.find(t=>t.track_id===id) || tracks.find(t=>t.id===id) || null;
 }
+
 function upNext(){
   const cur=current();
   return tracks.filter(t=>!t.played_at && (!cur||t.id!==cur.id))
@@ -191,9 +192,6 @@ function upNext(){
                .slice(0,6);
 }
 
-// Realtime is not always delivering session_tracks updates to this page, and a party
-// display that silently freezes is worse than one that costs a few extra queries.
-setInterval(()=>{ loadTracks(); refreshSession(); }, 12000);
 
 function renderAll(){
   const c=current();
