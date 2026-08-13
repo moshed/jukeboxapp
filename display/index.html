@@ -100,7 +100,7 @@
     <img id="art" alt="">
     <div id="title">Waiting for the next song</div>
     <div id="artist"></div>
-    <div id="votes"><span>👍</span><span id="votecount"></span></div>
+    <div id="votes"><span>❤️</span><span id="votecount"></span></div>
     <div id="lyrics"><div id="lyr-now"></div><div id="lyr-next"></div></div>
   </div>
   <div class="col">
@@ -187,9 +187,14 @@ function upNext(){
 
 function renderAll(){
   const c=current();
-  $('art').src=c?.artwork_url||'../assets/icon.png';
-  $('title').textContent=c?.title||'Waiting for the next song';
-  $('artist').textContent=c?.artist||'';
+  // The session carries the playing song's details now. Prefer them: the song is not
+  // always present in session_tracks, and the lookup then blanked the whole panel.
+  const npTitle  = session.current_track_title  || c?.title;
+  const npArtist = session.current_track_artist || c?.artist;
+  const npArt    = session.current_track_artwork_url || c?.artwork_url;
+  $('art').src=npArt||'../assets/icon.png';
+  $('title').textContent=npTitle||'Waiting for the next song';
+  $('artist').textContent=npArtist||'';
   const vc=session.current_track_vote_count||0;
   $('votes').style.display=vc>0?'flex':'none';
   $('votecount').textContent=vc+' votes';
@@ -201,7 +206,7 @@ function renderAll(){
     d.innerHTML=`<div class="n">${i+1}</div>
       <img src="${t.artwork_url||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
       <div class="meta"><div class="t">${esc(t.title)}</div><div class="a">${esc(t.artist||'')}</div></div>
-      <div class="pill ${t.vote_count>0?'hot':''}"><span>👍</span>${t.vote_count}</div>`;
+      <div class="pill ${t.vote_count>0?'hot':''}"><span>❤️</span>${t.vote_count}</div>`;
     $('queue').appendChild(d);
   });
 

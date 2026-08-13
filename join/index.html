@@ -89,6 +89,7 @@
   .searchbar button{position:absolute;right:8px;width:28px;height:28px;border:0;cursor:pointer;
     border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:13px;line-height:1}
   .noresult{padding:26px 8px;text-align:center;color:var(--muted)}
+  .vote .h{font-size:15px;line-height:1}
 </style>
 </head>
 <body>
@@ -272,7 +273,7 @@ function render(){
       <img src="${t.artwork_url||'../assets/icon.png'}" onerror="this.src='../assets/icon.png'" alt="">
       <div class="info"><div class="ti">${esc(t.title)}</div><div class="ar">${esc(t.artist||'')}</div></div>
       <button class="vote ${voted?'on':''}" ${(!voted&&remaining<=0)?'disabled':''} data-id="${t.id}">
-        <span class="n">${t.vote_count||0}</span><span class="c">${voted?'voted':'vote'}</span>
+        <span class="h">${voted?'❤️':'🤍'}</span><span class="n">${t.vote_count||0}</span>
       </button>`;
     row.querySelector('.vote').addEventListener('click',()=>toggleVote(t));
     list.appendChild(row);
@@ -280,10 +281,15 @@ function render(){
 }
 function renderNP(){
   const cur=currentTrack();
-  if(session.current_track_id && cur && session.is_playing!==false){
+  // Session fields first — the playing song is not always in session_tracks.
+  const t=session.current_track_title||cur?.title;
+  const a=session.current_track_artist||cur?.artist;
+  const art=session.current_track_artwork_url||cur?.artwork_url;
+  if(session.current_track_id && t && session.is_playing!==false){
     $('np').style.display='flex'; $('npIdle').style.display='none';
-    $('npArt').src=cur.artwork_url||'../assets/icon.png'; $('npTitle').textContent=cur.title;
-    $('npArtist').textContent=cur.artist||'';
+    $('npArt').src=art||'../assets/icon.png';
+    $('npTitle').textContent=t;
+    $('npArtist').textContent=a||'';
   }else{ $('np').style.display='none'; $('npIdle').style.display='flex'; }
 }
 
