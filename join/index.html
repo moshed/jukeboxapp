@@ -157,12 +157,14 @@ document.addEventListener('input',e=>{
   if(e.target.id!=='q') return;
   query=e.target.value.trim();
   document.getElementById('qclear').hidden=!query;
-  render();
+  clearTimeout(window._qT);
+  window._qT=setTimeout(async()=>{ await loadTracks(); render(); }, 250);
 });
 document.addEventListener('click',e=>{
   if(e.target.id!=='qclear') return;
   const box=document.getElementById('q');
-  box.value=''; query=''; e.target.hidden=true; render(); box.focus();
+  box.value=''; query=''; e.target.hidden=true; box.focus();
+  loadTracks().then(render);
 });
 const urlCode=(params.get('c')||params.get('code')||location.hash.replace('#','')).toUpperCase().trim();
 if(urlCode) $('code').value=urlCode;
@@ -227,7 +229,23 @@ async function enterVote(){
 }
 
 async function loadTracks(){
-  const {data,error}=await sb.from('session_tracks').select('*').eq('session_id',session.id).eq('is_active',true);
+  // A plain select stops at 1000 rows, and a library party can hold thousands — the
+  // voted and played songs fell outside that window, so the queue never appeared to
+  // change. Order on the server and take the top of the queue; searching queries the
+  // server too, so the whole party is still reachable.
+  let qy=sb.from('session_tracks')
+    .select('*')
+    .eq('session_id',session.id)
+    .eq('is_active',true)
+    .is('played_at',null);
+
+  if(query){
+    const safe=query.replace(/[%,()]/g,' ');
+    qy=qy.or(`title.ilike.%${safe}%,artist.ilike.%${safe}%`).limit(100);
+  }else{
+    qy=qy.order('vote_count',{ascending:false}).order('created_at',{ascending:true}).limit(100);
+  }
+  const {data,error}=await qy;
   if(!error) tracks=data||[];
   maxVotes=calcMax();
 }
@@ -263,12 +281,10 @@ function sorted(){
   // Played songs used to stay in the list forever, so the queue looked frozen while
   // the party moved on. Drop them, and the song playing right now.
   const cur=currentTrack();
-  const list=tracks
+  // Filtering and ordering happen on the server now; just keep the playing song out.
+  return tracks
     .filter(t=>!t.played_at && (!cur || t.id!==cur.id))
     .sort((a,b)=>(b.vote_count||0)-(a.vote_count||0) || new Date(a.created_at)-new Date(b.created_at));
-  if(!query) return list;
-  const q=norm(query);
-  return list.filter(t=>norm(t.title).includes(q) || norm(t.artist).includes(q));
 }
 function render(){
   const list=$('list'); const s=sorted();

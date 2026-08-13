@@ -168,7 +168,17 @@ async function start(code){
 
 async function loadTracks(){
   if(!session) return;
-  const {data}=await sb.from('session_tracks').select('*').eq('session_id',session.id).eq('is_active',true);
+  // A plain select caps at 1000 rows and this party has 2,328 tracks — the votes,
+  // the played songs and the song playing were all past that window, so nothing ever
+  // moved. Let the server do the ordering and take only what the screen shows.
+  const {data}=await sb.from('session_tracks')
+    .select('*')
+    .eq('session_id',session.id)
+    .eq('is_active',true)
+    .is('played_at',null)
+    .order('vote_count',{ascending:false})
+    .order('created_at',{ascending:true})
+    .limit(40);
   if(data){ tracks=data; renderAll(); }
 }
 async function refreshSession(){
