@@ -218,7 +218,13 @@ function renderAll(){
     $('queue').appendChild(d);
   });
 
-  if(c) fetchLyrics(c);
+  // Clear the lyrics when we no longer know the song, otherwise the previous song's
+  // words keep scrolling under a blank now-playing panel.
+  if(c){ fetchLyrics(c); }
+  else if(lyricsKey){
+    lyricsKey=''; lyrics=[]; lyricsSynced=false;
+    $('lyr-now').textContent=''; $('lyr-next').textContent='';
+  }
 }
 
 function renderJoinCard(){
