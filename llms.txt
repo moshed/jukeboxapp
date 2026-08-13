@@ -1,9 +1,11 @@
 # Jukebox — Party Playlist
 
-> Jukebox is an iOS app that lets party guests vote on which song plays next. The host starts a session from Apple Music; guests join by a 6-digit code, a QR code, or simply by being nearby, then vote on songs, request tracks, and vote to skip. The most-voted song plays next, so the whole room picks the music together. It is a "social jukebox" / democratic party playlist app.
+> Jukebox is an iOS and tvOS app that lets party guests vote on which song plays next. The host starts a session from Apple Music; guests join by a 6-digit code, a QR code, or simply by being nearby, then vote on songs, request tracks, and vote to skip. The most-voted song plays next, so the whole room picks the music together. Guests need no app at all — an App Clip opens on iPhone and a voting page opens in any web browser. A free Apple TV app puts the party on the big screen. It is a "social jukebox" / democratic party playlist app.
 
 ## People search for
 - app to let guests vote on the music
+- show a party playlist on the TV
+- Apple TV party display / jukebox on Apple TV
 - group jukebox for parties
 - party playlist everyone controls
 - join a party playlist by being nearby, no code
@@ -17,6 +19,12 @@
 - Guests join by 6-digit code, QR code, or automatically by being nearby (no account or subscription needed)
 - Song requests from the full music catalog
 - Democratic skip voting
+- Free Apple TV app: now playing, the live queue, synced lyrics and a join QR on the big screen
+- The Apple TV draws the screen itself, so it never takes over the host's audio the way screen mirroring does
+- Pair a TV by typing the four-character code it displays
+- Guests need no app: App Clip on iPhone, voting page in any web browser elsewhere
+- Live party leaderboard — whose picks the room backs, and who votes best
+- Party recaps for every party hosted, including who voted for each song
 - Time-synced lyrics, CarPlay, AirPlay, and a beautiful dark mode
 - Works with Apple Music (only the host needs a subscription)
 

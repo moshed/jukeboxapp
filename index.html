@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jukebox — Let Your Guests Vote on the Party Playlist</title>
-<meta name="description" content="Jukebox is the app that lets guests vote on the music — a group jukebox for parties, weddings, and bars where the party playlist is one everyone controls. The host plays from Apple Music; guests join by being nearby, no code needed, then vote on and request songs.">
+<meta name="description" content="Jukebox is the app that lets guests vote on the music — a group jukebox for parties, weddings, and bars where the party playlist is one everyone controls. The host plays from Apple Music; guests join by being nearby, no code and no app needed. A free Apple TV app puts the party on the big screen without taking over your speakers.">>
 <meta name="keywords" content="party playlist app, let guests vote on songs, group jukebox app, party song request app, democratic playlist, jukebox for parties, wedding music voting app, social jukebox, guests pick the music, apple music party app, crowd dj app">
 <link rel="canonical" href="https://jukebox.dancykier.com/">
 <link rel="icon" type="image/png" href="assets/icon.png?v=1">
@@ -23,9 +23,9 @@
   "@context": "https://schema.org",
   "@type": "MobileApplication",
   "name": "Jukebox - Party Playlist",
-  "operatingSystem": "iOS",
+  "operatingSystem": "iOS, tvOS",
   "applicationCategory": "MusicApplication",
-  "description": "Jukebox is a group jukebox app for parties, weddings, and bars. The host starts a session from their Apple Music library and guests vote on which song plays next. Guests join by a 6-digit code, a QR code, or simply by being nearby, and can request songs or vote to skip. The most-voted song plays next, so the whole room decides the music together. Features include real-time voting, song requests, democratic skip voting, time-synced lyrics, CarPlay support, AirPlay, and a beautiful dark mode.",
+  "description": "Jukebox is a group jukebox app for parties, weddings, and bars. The host starts a session from their Apple Music library and guests vote on which song plays next. Guests join by a 6-digit code, a QR code, or simply by being nearby, and need no app at all — an App Clip opens on iPhone and a voting page opens in any web browser. A free Apple TV app puts the party on the big screen with now playing, the live queue, synced lyrics and a join QR, while the music keeps playing from the host phone so the speakers are never interrupted. Features include real-time voting, song requests, democratic skip voting, time-synced lyrics, a live party leaderboard, party recaps, CarPlay support, AirPlay, and a beautiful dark mode.",
   "url": "https://jukebox.dancykier.com/",
   "downloadUrl": "https://apps.apple.com/us/app/jukebox-party-playlist/id6757018633",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
@@ -42,6 +42,11 @@
     "Vote to skip the current song",
     "Time-synced lyrics",
     "CarPlay and AirPlay support",
+    "Free Apple TV app that shows the party on the big screen",
+    "Pair an Apple TV with a four-character code",
+    "Guests vote with no app — an App Clip on iPhone or any web browser",
+    "Live party leaderboard of best picks and sharpest voters",
+    "Party recaps showing top songs and who voted for what",
     "Beautiful dark mode",
     "Works with Apple Music"
   ]
@@ -163,7 +168,27 @@
   .vcard h3{font-size:20px;margin-bottom:7px;letter-spacing:-.01em}
   .vcard p{color:var(--muted);font-size:14.5px;max-width:280px;margin:0 auto}
   @media(max-width:820px){.steps,.feat{grid-template-columns:1fr}section{padding:60px 0}header.hero{padding:64px 0 24px}.shot{width:220px}.vgrid{grid-template-columns:1fr;max-width:330px}}
+
+.tvshot{border-radius:18px;overflow:hidden;box-shadow:0 26px 70px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.09)}
+.tvshot img{display:block;width:100%;height:auto}
+.tvpair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:22px}
+.tvpair figure{margin:0}
+.tvpair img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid rgba(255,255,255,.09);box-shadow:0 14px 40px rgba(0,0,0,.45)}
+.tvpair figcaption{margin-top:8px;font-size:14px;color:#ab9fce;text-align:center}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How do guests join a Jukebox session?","acceptedAnswer":{"@type":"Answer","text":"Three ways: enter the 6-digit session code, scan the host's QR code, or just be nearby and join automatically. Guests do not need an account, and they do not need to install anything — an App Clip opens on iPhone and a voting page opens in any web browser."}},
+    {"@type":"Question","name":"Can I show the party on my TV?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is a free Jukebox app for Apple TV. The TV displays a four-character pairing code; type it once on your phone and the big screen shows the song playing now, the queue ranked by live votes, time-synced lyrics and a join QR code. The music keeps playing from the host's phone, so the speakers are never interrupted the way screen mirroring would. Any TV with a web browser can show the same display."}},
+    {"@type":"Question","name":"Do guests need Apple Music to vote?","acceptedAnswer":{"@type":"Answer","text":"No. Only the host needs Apple Music to play the audio. Guests can browse, vote and request songs with no music subscription."}},
+    {"@type":"Question","name":"Is Jukebox free?","acceptedAnswer":{"@type":"Answer","text":"Yes, Jukebox is free to host and free for guests. An optional Premium subscription removes the session time limit."}},
+    {"@type":"Question","name":"Can I see who voted for what after a party?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every party you host is saved, and its recap shows the top songs, the guests whose picks the room backed, and who voted for each song."}}
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -232,6 +257,31 @@
   </div>
 </div>
 
+<section id="tv" style="background:linear-gradient(180deg,transparent,var(--bg2),transparent)">
+  <div class="wrap">
+    <div class="eyebrow">New — Apple TV</div>
+    <h2>Put the party on the TV</h2>
+    <p class="lead">A free Apple TV app shows the whole room what's playing, what's next, and who's winning — while your music keeps playing from your phone.</p>
+
+    <div class="tvshot">
+      <img src="assets/tv_party.jpg" alt="Jukebox on an Apple TV at a house party, showing the now playing song, the voting queue and a join QR code" loading="lazy">
+    </div>
+
+    <div class="feat" style="margin-top:28px">
+      <div class="f highlight"><span class="ic">🔊</span><h3>Your speakers stay yours</h3><p>Screen mirroring hijacks your phone's audio — you can't split them. So the Apple TV draws the party screen itself. Your music keeps playing to whatever speaker you already use.</p></div>
+      <div class="f"><span class="ic">🔡</span><h3>Pair with four characters</h3><p>The TV shows a short code. Type it once on your phone and you're connected. No typing on the Siri remote, no cables, no setup.</p></div>
+      <div class="f"><span class="ic">📺</span><h3>Everything on screen</h3><p>Now playing with full artwork, the queue ranked by live votes, time-synced lyrics, and a join QR guests scan from the couch.</p></div>
+    </div>
+
+    <div class="tvpair">
+      <figure><img src="assets/tv_pair.jpg" alt="Apple TV showing a four-character pairing code to type on your phone" loading="lazy"><figcaption>Pair in seconds with a code</figcaption></figure>
+      <figure><img src="assets/tv_display.jpg" alt="Apple TV party display showing now playing, synced lyrics and the voting queue" loading="lazy"><figcaption>The party, on the big screen</figcaption></figure>
+    </div>
+
+    <p class="lead" style="margin-top:26px">No Apple TV? Any television with a web browser can show the same party screen.</p>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <p class="story reveal"><span style="display:block;font-size:16px;color:#ab9fce;margin-bottom:18px">The app that lets your guests vote on the music — a group jukebox for parties, a party playlist everyone controls, and the only one you join just by being nearby, no code.</span>Jukebox turns any gathering into a <span class="grad">shared soundtrack</span>. Instead of one person hogging the aux, <b>everyone gets a say</b> — they vote songs up, request their favorites, and skip the ones that miss. The crowd becomes the DJ, and the playlist becomes the party.</p>
@@ -263,6 +313,10 @@
       <div class="f"><span class="ic">⏭️</span><h3>Democratic skip</h3><p>Not feeling it? A quick group skip-vote moves things along — set your own threshold as host.</p></div>
       <div class="f"><span class="ic">🎤</span><h3>Time-synced lyrics</h3><p>Live, scrolling lyrics and full-screen artwork turn any nearby screen into the party centerpiece.</p></div>
       <div class="f"><span class="ic">🚗</span><h3>CarPlay &amp; AirPlay</h3><p>Great for road trips and big speakers — Jukebox works with CarPlay, AirPlay, and the lock screen.</p></div>
+      <div class="f"><span class="ic">📺</span><h3>Apple TV app</h3><p>Free companion app for the big screen — now playing, the live queue, lyrics and a join QR, without touching your audio.</p></div>
+      <div class="f"><span class="ic">📱</span><h3>Guests need no app</h3><p>Scan the QR and vote in seconds — an App Clip on iPhone, or the voting page in any web browser on anything else.</p></div>
+      <div class="f"><span class="ic">🏆</span><h3>Party leaderboard</h3><p>See whose picks the room actually backs. Live standings for best picks and sharpest voters, right in the app.</p></div>
+      <div class="f"><span class="ic">📊</span><h3>Party recaps</h3><p>After the night ends, look back at every party you've hosted — top songs, top voters, and who voted for what.</p></div>
       <div class="f"><span class="ic">🎛️</span><h3>Host stays in control</h3><p>Set votes per guest, explicit filters, session rules, and remove or ban anyone — all from your phone.</p></div>
       <div class="f"><span class="ic">🌙</span><h3>Beautiful dark mode</h3><p>A gorgeous, glassy interface that looks stunning on the couch, at the bar, or on the big screen.</p></div>
       <div class="f"><span class="ic">📍</span><h3>Location access control</h3><p>Keep sessions to the people actually at your party with optional location-based joining.</p></div>
@@ -297,6 +351,8 @@
       <details><summary>Do guests need Apple Music to vote?</summary><p>No. Only the host needs Apple Music to play the audio. Guests can browse, vote, and request songs without any music subscription at all.</p></details>
       <details><summary>Is Jukebox free?</summary><p>Yes — Jukebox is free to host and free for guests. An optional Premium subscription removes the session time limit for longer parties.</p></details>
       <details><summary>Can guests request songs that aren't in the playlist?</summary><p>Absolutely. Guests can search the full catalog and submit a request. The host can auto-approve requests or approve them one by one.</p></details>
+      <details><summary>Can I show the party on my TV?</summary><p>Yes. There's a free Jukebox app for Apple TV. Open it, and the TV shows a four-character code — type that once on your phone and the party appears on the big screen: now playing, the queue with live votes, synced lyrics, and a QR code guests can scan from the couch. Your music keeps playing from your phone, so your speakers are never interrupted. Any TV with a web browser can show the same screen.</p></details>
+      <details><summary>Do guests need to download anything?</summary><p>No. Guests scan the QR code and vote straight away — an App Clip opens on iPhone in about a second, and on anything else the voting page opens in the web browser. No account, no download, no subscription.</p></details>
       <details><summary>What music service does it use?</summary><p>Jukebox plays through Apple Music on the host's device, with full background playback, CarPlay, AirPlay, and lock-screen controls.</p></details>
       <details><summary>How many people can join?</summary><p>Sessions are built for real parties — the whole room can join and vote in real time, with live vote counts updating instantly for everyone.</p></details>
     </div>
