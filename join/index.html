@@ -90,6 +90,18 @@
     border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:13px;line-height:1}
   .noresult{padding:26px 8px;text-align:center;color:var(--muted)}
   .vote .h{font-size:15px;line-height:1}
+
+/* Always-visible route to the App Store. A web guest is someone who has not
+   installed anything yet, so this is the one place that reliably reaches them. */
+.getapp{display:flex;align-items:center;gap:10px;justify-content:center;
+  margin:18px auto 26px;padding:11px 16px;max-width:420px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;text-decoration:none;color:inherit}
+.getapp img{width:30px;height:30px;border-radius:7px;flex:none}
+.getapp .gt{font-weight:700;font-size:14px;line-height:1.25}
+.getapp .gs{font-size:12px;color:var(--muted);line-height:1.25}
+.getapp .go{margin-left:auto;font-weight:700;font-size:13px;white-space:nowrap}
+#join .getapp{margin-top:22px}
 </style>
 </head>
 <body>
@@ -104,6 +116,7 @@
   <div class="err" id="joinErr"></div>
   <a id="tvLink" href="../display/" style="text-align:center;color:var(--muted);font-size:14px;
      text-decoration:none;margin-top:2px">Showing this on a TV? <b style="color:var(--text)">Open Party Display →</b></a>
+  <a class="getapp" href="https://apps.apple.com/app/id6757018633"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
 </div>
 
 <!-- VOTE -->
@@ -132,6 +145,7 @@
       <button id="qclear" type="button" aria-label="Clear search" hidden>✕</button>
     </div>
     <div id="list"><div class="spin"></div></div>
+    <a class="getapp" href="https://apps.apple.com/app/id6757018633"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
   </div>
 </div>
 

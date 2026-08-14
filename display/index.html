@@ -282,7 +282,7 @@ function renderAll(){
 function renderJoinCard(){
   const link='https://jukebox.dancykier.com/join/?c='+session.code;
   $('joincode').textContent=session.code;
-  $('joinurl').textContent='Scan, or open jukebox.dancykier.com/join';
+  $('joinurl').innerHTML='Scan, or open jukebox.dancykier.com/join<br>Hosting your own? Get Jukebox on the App Store.';
   QRCode.toDataURL(link,{margin:0,width:400}).then(u=>$('qr').src=u).catch(()=>{});
 }
 
