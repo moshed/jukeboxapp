@@ -44,3 +44,11 @@ footer a{color:var(--muted);margin:0 10px}
 .postlist a.card:hover{text-decoration:none;border-color:rgba(138,92,255,.5)}
 .postlist h2{font-size:22px;margin:0 0 8px}
 .postlist p{color:var(--muted);font-size:16px;margin:0}
+
+/* Comparison tables. Added for the competitor comparison articles — they scroll
+   horizontally on a phone rather than squashing the columns unreadably. */
+article table{width:100%;border-collapse:collapse;margin:22px 0;font-size:15px;min-width:420px}
+article table th,article table td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line,rgba(255,255,255,.10))}
+article table thead th{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+article table tbody td:first-child{width:38%}
+article table tbody tr:last-child td{border-bottom:0}
