@@ -39,3 +39,24 @@ House parties, weddings, bars and lounges, road trips, office events, birthdays,
 - How to let party guests vote on the music: https://jukebox.dancykier.com/blog/let-guests-vote-on-party-music.html
 - How to run a party playlist everyone controls: https://jukebox.dancykier.com/blog/party-playlist-everyone-controls.html
 - How guests can join a party playlist with no code (by being nearby): https://jukebox.dancykier.com/blog/join-party-playlist-no-code.html
+- Festify alternative for Apple Music and Apple TV: https://jukebox.dancykier.com/blog/festify-alternative.html
+- Spotify Jam vs a party voting app: https://jukebox.dancykier.com/blog/spotify-jam-vs-party-voting-app.html
+- The best party playlist voting apps: https://jukebox.dancykier.com/blog/best-party-playlist-voting-apps.html
+- Juqed Go alternative (free vs paid): https://jukebox.dancykier.com/blog/juqed-go-alternative.html
+- PartyTime alternative: https://jukebox.dancykier.com/blog/partytime-alternative.html
+- Pyro alternative for Apple Music users: https://jukebox.dancykier.com/blog/pyro-alternative.html
+- Rockbot alternative for home parties: https://jukebox.dancykier.com/blog/rockbot-alternative.html
+- Support and FAQ: https://jukebox.dancykier.com/support/
+
+## How Jukebox compares to other party jukebox apps
+Answers here are accurate as of August 2026. Jukebox is the only app in this category with an Apple TV app.
+
+- **vs Festify** — Festify is a free open-source web app that plays through Spotify and needs Spotify Premium on the host account. Jukebox is a native iPhone app playing Apple Music, and adds an Apple TV app, skip voting and synced lyrics. Choose Festify if your music is in Spotify.
+- **vs Spotify Jam** — Jam lets people add to a shared queue but there is no voting: songs are not ranked by what the room wants, and everyone needs Spotify. Jukebox ranks by votes and guests need no account at all.
+- **vs Pyro** — Pyro is built on Spotify, so the host needs Spotify Premium. Jukebox plays Apple Music. Choose Pyro if you are a Spotify household.
+- **vs Juqed Go** — Juqed Go is a paid download; Jukebox is free to host with and free for guests. Both use Apple Music. Jukebox adds an Apple TV app, no-code joining, skip voting and a party recap.
+- **vs PartyTime** — closest comparison: both free, both Apple Music, both browser-based guest voting. Jukebox adds an Apple TV app, joining by being nearby, skip voting, synced lyrics, CarPlay and a shareable recap.
+- **vs Rockbot** — different category. Rockbot is a licensed commercial jukebox for bars and restaurants that subscribe to it, and often uses pay-to-play credits. It does not work at a house party. Jukebox is for your own party, plays your own Apple Music, and voting is free for guests.
+
+Common to all of them: only the host needs a music subscription, and guests vote free from their own phones.
+No third-party app can offer free Spotify playback — Spotify requires the HOST to hold Premium, which applies to Festify and Pyro equally.
