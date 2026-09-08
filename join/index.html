@@ -116,7 +116,7 @@
   <div class="err" id="joinErr"></div>
   <a id="tvLink" href="../display/" style="text-align:center;color:var(--muted);font-size:14px;
      text-decoration:none;margin-top:2px">Showing this on a TV? <b style="color:var(--text)">Open Party Display →</b></a>
-  <a class="getapp" href="https://apps.apple.com/app/id6757018633"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
+  <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
 </div>
 
 <!-- VOTE -->
@@ -145,7 +145,7 @@
       <button id="qclear" type="button" aria-label="Clear search" hidden>✕</button>
     </div>
     <div id="list"><div class="spin"></div></div>
-    <a class="getapp" href="https://apps.apple.com/app/id6757018633"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
+    <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
   </div>
 </div>
 
@@ -204,9 +204,18 @@ async function doJoin(){
   localStorage.setItem('jb_name',name==='Guest'?'':name);
   $('joinBtn').disabled=true;$('joinBtn').textContent='Joining…';$('joinErr').textContent='';
   try{
+    // signInAnonymously() ALWAYS creates a brand new anonymous user - it never reuses a
+    // stored one. Calling it on every page load is what handed a reloading guest a fresh
+    // set of votes: new uid -> new profile -> empty allowance. Restore the existing
+    // session first and only sign in when there genuinely is not one.
     if(!myId){
-      const {data:auth,error:ae}=await sb.auth.signInAnonymously();
-      if(ae) throw ae; myId=auth.user.id;
+      const {data:cur}=await sb.auth.getSession();
+      if(cur?.session?.user?.id){
+        myId=cur.session.user.id;
+      }else{
+        const {data:auth,error:ae}=await sb.auth.signInAnonymously();
+        if(ae) throw ae; myId=auth.user.id;
+      }
     }
     // postgres_changes is RLS-checked against the socket's own token. Without this the
     // socket keeps the plain anon key, every row check fails silently and live updates
@@ -264,6 +273,13 @@ async function loadTracks(){
   maxVotes=calcMax();
 }
 async function loadMyVotes(){
+  // Ask by DEVICE first: that covers votes cast under an earlier identity, which is what
+  // made the allowance resettable. Falls back to this profile if the RPC is unavailable.
+  const {data:dev,error:de}=await sb.rpc('votes_for_device',{p_session_id:session.id,p_device_id:device});
+  if(!de && Array.isArray(dev)){
+    myVotes=new Set(dev.map(v=>v.track_id));
+    return;
+  }
   const {data,error}=await sb.from('votes').select('track_id').eq('session_id',session.id).eq('voter_id',myId);
   if(!error) myVotes=new Set((data||[]).map(v=>v.track_id));
 }
