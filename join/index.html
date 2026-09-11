@@ -40,7 +40,12 @@
 
   /* VOTE screen */
   #vote{display:none}
-  .top{position:sticky;top:0;z-index:5;margin:-18px -16px 12px;padding:14px 16px calc(14px);
+  /* MEASURED: with `margin:-18px -16px`, this sat at L-16 R446 in a 430px viewport and
+     the page scrolled sideways by 16px. Those negative margins were written for a parent
+     with 16px of padding, but `.top` is a direct child of `#vote`, which has none — so it
+     bled outward instead of cancelling padding. Zero margins give the intended full-bleed
+     header exactly, 0 to 430. */
+  .top{position:sticky;top:0;z-index:5;margin:0 0 12px;padding:14px 16px;
     background:linear-gradient(180deg,rgba(12,7,24,.96),rgba(12,7,24,.72));backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line)}
   .np{display:flex;align-items:center;gap:12px}
@@ -74,6 +79,26 @@
   .vote.on .c{color:rgba(255,255,255,.85)}
   .vote:disabled{opacity:.55}
 
+  /* min-width:0 and the ellipsis below are load-bearing: a long label (German
+     "Für Überspringen stimmen") widened the whole page and clipped every vote
+     button off the right edge. */
+  .skipbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:100%;
+    min-width:0;margin-top:10px;
+    padding:9px 14px;border-radius:12px;font-size:13px;font-weight:700;
+    background:var(--card2);border:1px solid var(--line);color:var(--muted)}
+  .skipbtn.on{background:linear-gradient(90deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+  .skipbtn #skipLbl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .skipbtn .skipn{font-weight:800;opacity:.8;flex:none}
+  .leadbtn{display:block;width:100%;margin:4px 0 2px;padding:12px;border-radius:14px;font-size:14px;
+    font-weight:700;background:var(--card);border:1px solid var(--line);color:var(--text)}
+  .leadpanel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0 2px}
+  .leadrow{display:flex;align-items:center;gap:10px;padding:7px 2px;font-size:15px}
+  .leadrow .av{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;background:var(--card2)}
+  .leadrow .rank{width:22px;color:var(--muted);font-weight:800;font-size:13px;flex:none}
+  .leadrow .who{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .leadrow .cnt{font-weight:800;color:var(--accent2)}
+  .leadclose{width:100%;margin-top:8px;padding:10px;border-radius:12px;background:var(--card2);
+    border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:700}
   .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);
     background:#2a1f45;border:1px solid var(--line);color:var(--text);padding:11px 18px;border-radius:12px;
     font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:88%;text-align:center}
@@ -109,14 +134,14 @@
 <!-- JOIN -->
 <div id="join">
   <div class="logo"><img src="../assets/icon.png" alt=""><h1>Jukebox</h1></div>
-  <p class="sub">Join the party and vote on what plays next.</p>
-  <input id="code" class="code-in" placeholder="CODE" maxlength="6" autocomplete="off" autocapitalize="characters" inputmode="text">
-  <input id="name" placeholder="Your name (optional)" maxlength="24" autocomplete="off">
-  <button id="joinBtn" class="btn">Join Party</button>
+  <p class="sub" data-i18n="sub">Join the party and vote on what plays next.</p>
+  <input id="code" class="code-in" data-i18n-ph="code" placeholder="CODE" maxlength="6" autocomplete="off" autocapitalize="characters" inputmode="text">
+  <input id="name" data-i18n-ph="yourName" placeholder="Your name (optional)" maxlength="24" autocomplete="off">
+  <button id="joinBtn" class="btn" data-i18n="join">Join Party</button>
   <div class="err" id="joinErr"></div>
   <a id="tvLink" href="../display/" style="text-align:center;color:var(--muted);font-size:14px;
-     text-decoration:none;margin-top:2px">Showing this on a TV? <b style="color:var(--text)">Open Party Display →</b></a>
-  <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
+     text-decoration:none;margin-top:2px"><span data-i18n="tv">Showing this on a TV?</span> <b style="color:var(--text)" data-i18n="openDisplay">Open Party Display →</b></a>
+  <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt" data-i18n="getTitle">Get Jukebox on iPhone</div><div class="gs" data-i18n="getSub">Host your own party, and vote without a browser</div></div><div class="go" data-i18n="get">Get →</div></a>
 </div>
 
 <!-- VOTE -->
@@ -125,27 +150,31 @@
     <div class="np" id="np" style="display:none">
       <img id="npArt" alt="">
       <div style="min-width:0">
-        <div class="lbl">Now Playing</div>
+        <div class="lbl" data-i18n="nowPlaying">Now Playing</div>
         <div class="t" id="npTitle"></div>
         <div class="a" id="npArtist"></div>
       </div>
       <div class="eq"><span></span><span></span><span></span></div>
     </div>
-    <div class="np" id="npIdle"><div class="lbl" style="color:var(--muted)">Nothing playing right now</div></div>
+    <button id="skipBtn" class="skipbtn" hidden><span id="skipLbl">Vote to skip</span><span class="skipn" id="skipN"></span></button>
+    <div class="np" id="npIdle"><div class="lbl" style="color:var(--muted)" data-i18n="nothing">Nothing playing right now</div></div>
   </div>
   <div class="wrap" style="padding-top:0">
     <div class="hdr">
-      <h2 id="partyName">The Queue</h2>
+      <h2 id="partyName" data-i18n="queue">The Queue</h2>
       <div class="remain" id="remain"></div>
     </div>
     <div class="searchbar">
       <span class="mag">🔎</span>
-      <input id="q" type="search" placeholder="Search this party's songs" autocomplete="off"
+      <input id="q" type="search" data-i18n-ph="search" placeholder="Search this party's songs" autocomplete="off"
              autocorrect="off" spellcheck="false" aria-label="Search songs">
       <button id="qclear" type="button" aria-label="Clear search" hidden>✕</button>
     </div>
     <div id="list"><div class="spin"></div></div>
-    <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt">Get Jukebox on iPhone</div><div class="gs">Host your own party, and vote without a browser</div></div><div class="go">Get →</div></a>
+    <button id="leadBtn" class="leadbtn" hidden>🏆 <span data-i18n="leaders">Top voters</span></button>
+    <div id="leadPanel" class="leadpanel" hidden><div id="leadList"></div>
+      <button id="leadClose" class="leadclose" data-i18n="close">Close</button></div>
+    <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt" data-i18n="getTitle">Get Jukebox on iPhone</div><div class="gs" data-i18n="getSub">Host your own party, and vote without a browser</div></div><div class="go" data-i18n="get">Get →</div></a>
   </div>
 </div>
 
@@ -158,10 +187,134 @@ const URL='https://qwwztojldmmvqnavxvnf.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3d3p0b2psZG1tdnFuYXZ4dm5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MjgxNTEsImV4cCI6MjA4MjEwNDE1MX0.249N-HRutCLt_UWFlfchmMfemXC_jYjlQCAG6M3YNog';
 const sb=createClient(URL,KEY);
 
+
+/* ---------------------------------------------------------------------------
+   Language. The guest is the least invested person at the party: they were sent
+   a link by a friend and have installed nothing. A page in their own language is
+   worth more here than anywhere else in the product.
+
+   Matched on the browser's language, base tag first ("pt-BR" -> "pt"), falling
+   back to English. No build step, no library — the page is one file and stays
+   one file.
+--------------------------------------------------------------------------- */
+const I18N = {
+  en:{join:"Join Party",joining:"Joining…",sub:"Join the party and vote on what plays next.",
+      code:"CODE",yourName:"Your name (optional)",enterCode:"Enter the party code.",
+      notFound:"Party not found. Check the code.",couldNotJoin:"Could not join",
+      tv:"Showing this on a TV?",openDisplay:"Open Party Display →",
+      getTitle:"Get Jukebox on iPhone",getSub:"Host your own party, and vote without a browser",get:"Get →",
+      nowPlaying:"Now Playing",nothing:"Nothing playing right now",queue:"The Queue",
+      search:"Search this party's songs",noMatch:"No songs match",empty:"No songs in the queue yet.",
+      votesLeft:"{n} votes left",voteLeft:"{n} vote left",usedAll:"You've used all {n} votes",
+      couldNotVote:"Could not vote",couldNotRemove:"Could not remove vote",already:"Already voted for this",
+      ended:"This party has ended",locNeeded:"Turn on location to join this party",
+      skip:"Vote to skip",skipVoted:"Skip voted",skipCount:"{n}/{m}",
+      leaders:"Top voters",noLeaders:"No votes yet.",votesWord:"votes",close:"Close"},
+  es:{join:"Unirse",joining:"Entrando…",sub:"Únete a la fiesta y vota qué suena después.",
+      code:"CÓDIGO",yourName:"Tu nombre (opcional)",enterCode:"Escribe el código de la fiesta.",
+      notFound:"Fiesta no encontrada. Revisa el código.",couldNotJoin:"No se pudo entrar",
+      tv:"¿Lo ves en una TV?",openDisplay:"Abrir pantalla →",
+      getTitle:"Consigue Jukebox para iPhone",getSub:"Organiza tu propia fiesta y vota sin navegador",get:"Obtener →",
+      nowPlaying:"Sonando ahora",nothing:"No suena nada ahora mismo",queue:"La cola",
+      search:"Buscar canciones de esta fiesta",noMatch:"Ninguna canción coincide",empty:"Aún no hay canciones.",
+      votesLeft:"{n} votos restantes",voteLeft:"{n} voto restante",usedAll:"Has usado tus {n} votos",
+      couldNotVote:"No se pudo votar",couldNotRemove:"No se pudo quitar el voto",already:"Ya votaste por esta",
+      ended:"Esta fiesta ha terminado",locNeeded:"Activa la ubicación para entrar",
+      skip:"Saltar canción",skipVoted:"Voto enviado",skipCount:"{n}/{m}",
+      leaders:"Quién más vota",noLeaders:"Aún no hay votos.",votesWord:"votos",close:"Cerrar"},
+  fr:{join:"Rejoindre",joining:"Connexion…",sub:"Rejoignez la fête et votez pour la musique.",
+      code:"CODE",yourName:"Votre nom (facultatif)",enterCode:"Entrez le code de la fête.",
+      notFound:"Fête introuvable. Vérifiez le code.",couldNotJoin:"Impossible de rejoindre",
+      tv:"Affiché sur une TV ?",openDisplay:"Ouvrir l'écran →",
+      getTitle:"Télécharger Jukebox sur iPhone",getSub:"Organisez votre fête et votez sans navigateur",get:"Obtenir →",
+      nowPlaying:"En lecture",nothing:"Rien ne joue pour le moment",queue:"La file",
+      search:"Rechercher dans cette fête",noMatch:"Aucun titre ne correspond",empty:"Aucun titre dans la file.",
+      votesLeft:"{n} votes restants",voteLeft:"{n} vote restant",usedAll:"Vous avez utilisé vos {n} votes",
+      couldNotVote:"Vote impossible",couldNotRemove:"Impossible de retirer le vote",already:"Déjà voté pour ce titre",
+      ended:"Cette fête est terminée",locNeeded:"Activez la localisation pour rejoindre",
+      skip:"Passer ce titre",skipVoted:"Vote enregistré",skipCount:"{n}/{m}",
+      leaders:"Qui vote le plus",noLeaders:"Pas encore de votes.",votesWord:"votes",close:"Fermer"},
+  de:{join:"Beitreten",joining:"Trete bei…",sub:"Tritt der Party bei und stimme ab, was läuft.",
+      code:"CODE",yourName:"Dein Name (optional)",enterCode:"Gib den Party-Code ein.",
+      notFound:"Party nicht gefunden. Prüfe den Code.",couldNotJoin:"Beitritt fehlgeschlagen",
+      tv:"Läuft das auf einem TV?",openDisplay:"Party-Display öffnen →",
+      getTitle:"Jukebox fürs iPhone laden",getSub:"Eigene Party hosten und ohne Browser abstimmen",get:"Laden →",
+      nowPlaying:"Läuft gerade",nothing:"Gerade läuft nichts",queue:"Die Warteschlange",
+      search:"Songs dieser Party suchen",noMatch:"Keine Songs gefunden",empty:"Noch keine Songs.",
+      votesLeft:"Noch {n} Stimmen",voteLeft:"Noch {n} Stimme",usedAll:"Du hast alle {n} Stimmen genutzt",
+      couldNotVote:"Abstimmen fehlgeschlagen",couldNotRemove:"Stimme konnte nicht entfernt werden",already:"Dafür hast du schon gestimmt",
+      ended:"Diese Party ist vorbei",locNeeded:"Standort aktivieren, um beizutreten",
+      skip:"Überspringen",skipVoted:"Stimme gezählt",skipCount:"{n}/{m}",
+      leaders:"Wer am meisten abstimmt",noLeaders:"Noch keine Stimmen.",votesWord:"Stimmen",close:"Schließen"},
+  pt:{join:"Entrar",joining:"Entrando…",sub:"Entre na festa e vote na próxima música.",
+      code:"CÓDIGO",yourName:"Seu nome (opcional)",enterCode:"Digite o código da festa.",
+      notFound:"Festa não encontrada. Confira o código.",couldNotJoin:"Não foi possível entrar",
+      tv:"Está numa TV?",openDisplay:"Abrir tela da festa →",
+      getTitle:"Baixe o Jukebox no iPhone",getSub:"Crie sua festa e vote sem o navegador",get:"Baixar →",
+      nowPlaying:"Tocando agora",nothing:"Nada tocando no momento",queue:"A fila",
+      search:"Buscar músicas desta festa",noMatch:"Nenhuma música encontrada",empty:"Ainda não há músicas.",
+      votesLeft:"{n} votos restantes",voteLeft:"{n} voto restante",usedAll:"Você usou seus {n} votos",
+      couldNotVote:"Não foi possível votar",couldNotRemove:"Não foi possível remover o voto",already:"Você já votou nesta",
+      ended:"Esta festa terminou",locNeeded:"Ative a localização para entrar",
+      skip:"Pular música",skipVoted:"Voto registrado",skipCount:"{n}/{m}",
+      leaders:"Quem mais vota",noLeaders:"Ainda sem votos.",votesWord:"votos",close:"Fechar"},
+  it:{join:"Entra",joining:"Accesso…",sub:"Entra alla festa e vota cosa suona dopo.",
+      code:"CODICE",yourName:"Il tuo nome (facoltativo)",enterCode:"Inserisci il codice della festa.",
+      notFound:"Festa non trovata. Controlla il codice.",couldNotJoin:"Impossibile entrare",
+      tv:"Lo stai vedendo in TV?",openDisplay:"Apri schermo festa →",
+      getTitle:"Scarica Jukebox su iPhone",getSub:"Organizza la tua festa e vota senza browser",get:"Scarica →",
+      nowPlaying:"In riproduzione",nothing:"Non sta suonando nulla",queue:"La coda",
+      search:"Cerca tra i brani della festa",noMatch:"Nessun brano trovato",empty:"Ancora nessun brano.",
+      votesLeft:"{n} voti rimasti",voteLeft:"{n} voto rimasto",usedAll:"Hai usato tutti i {n} voti",
+      couldNotVote:"Impossibile votare",couldNotRemove:"Impossibile rimuovere il voto",already:"Hai già votato questo",
+      ended:"Questa festa è finita",locNeeded:"Attiva la posizione per entrare",
+      skip:"Salta brano",skipVoted:"Voto registrato",skipCount:"{n}/{m}",
+      leaders:"Chi vota di più",noLeaders:"Ancora nessun voto.",votesWord:"voti",close:"Chiudi"},
+  nl:{join:"Deelnemen",joining:"Bezig…",sub:"Doe mee en stem op wat er straks speelt.",
+      code:"CODE",yourName:"Je naam (optioneel)",enterCode:"Vul de partycode in.",
+      notFound:"Party niet gevonden. Check de code.",couldNotJoin:"Deelnemen mislukt",
+      tv:"Zie je dit op een TV?",openDisplay:"Party-scherm openen →",
+      getTitle:"Download Jukebox voor iPhone",getSub:"Host je eigen party en stem zonder browser",get:"Halen →",
+      nowPlaying:"Speelt nu",nothing:"Er speelt nu niets",queue:"De wachtrij",
+      search:"Zoek nummers van deze party",noMatch:"Geen nummers gevonden",empty:"Nog geen nummers.",
+      votesLeft:"Nog {n} stemmen",voteLeft:"Nog {n} stem",usedAll:"Je hebt al je {n} stemmen gebruikt",
+      couldNotVote:"Stemmen mislukt",couldNotRemove:"Stem verwijderen mislukt",already:"Hier heb je al op gestemd",
+      ended:"Deze party is afgelopen",locNeeded:"Zet locatie aan om deel te nemen",
+      skip:"Overslaan",skipVoted:"Stem geteld",skipCount:"{n}/{m}",
+      leaders:"Wie het meest stemt",noLeaders:"Nog geen stemmen.",votesWord:"stemmen",close:"Sluiten"},
+};
+const LANG = (() => {
+  // ?lang=de forces one, which is how these get checked without reconfiguring a phone.
+  const forced = new URLSearchParams(location.search).get('lang');
+  if (forced && I18N[forced.toLowerCase().split('-')[0]]) return forced.toLowerCase().split('-')[0];
+  for (const tag of (navigator.languages || [navigator.language || 'en'])) {
+    const base = String(tag).toLowerCase().split('-')[0];
+    if (I18N[base]) return base;
+  }
+  return 'en';
+})();
+document.documentElement.lang = LANG;
+function t(key, vars){
+  let s = (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key;
+  if (vars) for (const k in vars) s = s.replace('{'+k+'}', vars[k]);
+  return s;
+}
+/* `t` is shadowed wherever a local is called `t` — `toggleVote(t)` takes the TRACK as t,
+   and render()'s loop binds `const t of s`. Inside those, `t('key')` would try to call a
+   track. `tr` is the same function under a name nothing else uses. */
+const tr = t;
+
+/** Fills every element carrying data-i18n / data-i18n-ph. */
+function applyI18N(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
+}
+
 const $=id=>document.getElementById(id);
 const toastEl=$('toast'); let toastT;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('show'),2200);}
 
+applyI18N();
 let device=localStorage.getItem('jb_device'); if(!device){device=crypto.randomUUID();localStorage.setItem('jb_device',device);}
 let myId=null, session=null, tracks=[], myVotes=new Set(), maxVotes=3, refetchT;
 
@@ -200,9 +353,9 @@ function calcMax(){
 async function doJoin(){
   const code=$('code').value.toUpperCase().trim();
   const name=($('name').value.trim())||'Guest';
-  if(code.length<4){$('joinErr').textContent='Enter the party code.';return;}
+  if(code.length<4){$('joinErr').textContent=t('enterCode');return;}
   localStorage.setItem('jb_name',name==='Guest'?'':name);
-  $('joinBtn').disabled=true;$('joinBtn').textContent='Joining…';$('joinErr').textContent='';
+  $('joinBtn').disabled=true;$('joinBtn').textContent=t('joining');$('joinErr').textContent='';
   try{
     // signInAnonymously() ALWAYS creates a brand new anonymous user - it never reuses a
     // stored one. Calling it on every page load is what handed a reloading guest a fresh
@@ -232,22 +385,24 @@ async function doJoin(){
     localStorage.setItem('jb_lastcode',code);
     enterVote();
   }catch(e){
-    const m=(e.message||'Could not join').replace(/^.*exception:?/i,'').trim();
-    $('joinErr').textContent=/not found|inactive/i.test(m)?'Party not found. Check the code.':m;
-    $('joinBtn').disabled=false;$('joinBtn').textContent='Join Party';
+    const m=(e.message||t('couldNotJoin')).replace(/^.*exception:?/i,'').trim();
+    $('joinErr').textContent=/not found|inactive/i.test(m)?t('notFound'):m;
+    $('joinBtn').disabled=false;$('joinBtn').textContent=t('join');
   }
 }
 function getLoc(){return new Promise((resolve,reject)=>{
   if(!navigator.geolocation) return reject(new Error('Location needed but unavailable'));
   navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),
-    ()=>reject(new Error('Turn on location to join this party')),{enableHighAccuracy:true,timeout:10000});
+    ()=>reject(new Error(t('locNeeded'))),{enableHighAccuracy:true,timeout:10000});
 });}
 
 async function enterVote(){
   $('join').style.display='none'; $('vote').style.display='block';
-  $('partyName').textContent=session.name||'The Queue';
+  $('partyName').textContent=session.name||t('queue');
   await Promise.all([loadTracks(),loadMyVotes()]);
   render(); renderNP();
+  $('leadBtn').hidden=false;
+  await loadSkip();
   subscribe();
 }
 
@@ -285,7 +440,7 @@ async function loadMyVotes(){
 }
 async function refreshSession(){
   const {data}=await sb.from('sessions').select('*').eq('id',session.id).single();
-  if(data){session=data; if(!session.is_active){toast('This party has ended');} }
+  if(data){session=data; if(!session.is_active){toast(t('ended'));} }
 }
 
 let query='';
@@ -337,13 +492,13 @@ function sorted(){
 function render(){
   const list=$('list'); const s=sorted();
   if(query && !s.length){
-    list.innerHTML='<div class="noresult">No songs match \u201C'+esc(query)+'\u201D</div>';
+    list.innerHTML='<div class="noresult">'+t('noMatch')+' \u201C'+esc(query)+'\u201D</div>';
     $('remain').innerHTML='';
     return;
   }
   const remaining=Math.max(0,maxVotes-myVotes.size);
-  $('remain').innerHTML=`<b>${remaining}</b> vote${remaining===1?'':'s'} left`;
-  if(!s.length){list.innerHTML='<div class="empty">No songs in the queue yet.</div>';return;}
+  $('remain').innerHTML=t(remaining===1?'voteLeft':'votesLeft',{n:'<b>'+remaining+'</b>'});
+  if(!s.length){list.innerHTML='<div class="empty">'+t('empty')+'</div>';return;}
   list.innerHTML='';
   for(const t of s){
     const voted=myVotes.has(t.id);
@@ -379,23 +534,125 @@ async function toggleVote(t){
   if(voted){
     myVotes.delete(t.id); t.vote_count=Math.max(0,(t.vote_count||0)-1); render();
     const {error}=await sb.from('votes').delete().eq('session_id',session.id).eq('track_id',t.id).eq('voter_id',myId);
-    if(error){myVotes.add(t.id);t.vote_count=(t.vote_count||0)+1;render();toast('Could not remove vote');}
+    if(error){myVotes.add(t.id);t.vote_count=(t.vote_count||0)+1;render();toast(tr('couldNotRemove'));}
   }else{
-    if(remaining<=0){toast(`You've used all ${maxVotes} votes`);return;}
+    if(remaining<=0){toast(t('usedAll',{n:maxVotes}));return;}
     myVotes.add(t.id); t.vote_count=(t.vote_count||0)+1; render();
     const {error}=await sb.from('votes').insert({id:crypto.randomUUID(),session_id:session.id,track_id:t.id,voter_id:myId,vote_weight:1});
     if(error){myVotes.delete(t.id);t.vote_count=Math.max(0,(t.vote_count||0)-1);render();
-      toast(/duplicate|unique/i.test(error.message)?'Already voted for this':'Could not vote');}
+      toast(/duplicate|unique/i.test(error.message)?tr('already'):tr('couldNotVote'));}
   }
+}
+
+
+/* ---------------------------------------------------------------------------
+   SKIP VOTE — parity with the app.
+   The host can turn this off, so the row only appears when the party allows it
+   AND something is actually playing. Threshold is either an absolute number of
+   votes or a percentage of the people in the room, exactly as the app computes
+   it (see SessionTabView.requiredSkipVotes).
+--------------------------------------------------------------------------- */
+let skipVotes=0, iSkipped=false, guestCount=1;
+
+function skipNeeded(){
+  const mode=session?.skip_vote_mode, v=session?.skip_vote_threshold||0;
+  if(mode==='percentage') return Math.max(1, Math.ceil(guestCount*v/100));
+  return Math.max(1, v);
+}
+async function loadSkip(){
+  if(!session?.current_track_id || session.skip_vote_mode==='disabled'){ $('skipBtn').hidden=true; return; }
+  const [{count:sc},{count:pc}]=await Promise.all([
+    sb.from('skip_votes').select('*',{count:'exact',head:true}).eq('session_id',session.id),
+    sb.from('profiles').select('*',{count:'exact',head:true}).eq('session_id',session.id),
+  ]);
+  skipVotes=sc||0; guestCount=Math.max(1,pc||1);
+  const {data:mine}=await sb.from('skip_votes').select('voter_id').eq('session_id',session.id).eq('voter_id',myId);
+  iSkipped=!!(mine&&mine.length);
+  renderSkip();
+}
+function renderSkip(){
+  const btn=$('skipBtn');
+  if(!session?.current_track_id || session.skip_vote_mode==='disabled'){ btn.hidden=true; return; }
+  btn.hidden=false;
+  btn.classList.toggle('on', iSkipped);
+  $('skipLbl').textContent = iSkipped ? tr('skipVoted') : tr('skip');
+  $('skipN').textContent = tr('skipCount',{n:skipVotes,m:skipNeeded()});
+}
+async function toggleSkip(){
+  if(iSkipped){
+    iSkipped=false; skipVotes=Math.max(0,skipVotes-1); renderSkip();
+    const {error}=await sb.from('skip_votes').delete().eq('session_id',session.id).eq('voter_id',myId);
+    if(error){ iSkipped=true; skipVotes++; renderSkip(); }
+  }else{
+    iSkipped=true; skipVotes++; renderSkip();
+    const {error}=await sb.from('skip_votes').insert({session_id:session.id,voter_id:myId});
+    if(error){ iSkipped=false; skipVotes=Math.max(0,skipVotes-1); renderSkip(); }
+  }
+}
+$('skipBtn').addEventListener('click',toggleSkip);
+
+/* ---------------------------------------------------------------------------
+   LEADERBOARD — the same `party_leaderboard` RPC the app calls.
+   It requires a signed-in caller, which this page has after joining: the plain
+   anon key alone comes back "Not signed in".
+--------------------------------------------------------------------------- */
+async function showLeaders(){
+  const panel=$('leadPanel'), list=$('leadList');
+  panel.hidden=false; list.innerHTML='<div class="spin"></div>';
+  const {data,error}=await sb.rpc('party_leaderboard',{p_session_id:session.id});
+  // The RPC returns an OBJECT, not a list: { voters:[{name, avatar_url, votes_landed}],
+  // curators:[…] }. Verified against a live party as a joined guest — treating it as an
+  // array silently rendered nothing.
+  const voters = (data && data.voters) || [];
+  if(error || !voters.length){ list.innerHTML='<div class="noresult">'+tr('noLeaders')+'</div>'; return; }
+  list.innerHTML='';
+  voters.slice(0,10).forEach((r,i)=>{
+    const row=document.createElement('div'); row.className='leadrow';
+    const art = r.avatar_url ? '<img class="av" src="'+esc(r.avatar_url)+'" alt="" onerror="this.remove()">' : '';
+    row.innerHTML='<div class="rank">'+(i+1)+'</div>'+art+
+      '<div class="who">'+esc(r.name||'Guest')+'</div>'+
+      '<div class="cnt">'+(r.votes_landed ?? 0)+'</div>';
+    list.appendChild(row);
+  });
+}
+$('leadBtn').addEventListener('click',showLeaders);
+$('leadClose').addEventListener('click',()=>{$('leadPanel').hidden=true;});
+
+/* ---------------------------------------------------------------------------
+   ?demo=1 — the vote screen on stubbed data, no party and no network.
+   Same reasoning as the app's -DemoScreen harness: this screen is only ever seen
+   by a guest mid-party, so without this it ships unlooked-at.
+--------------------------------------------------------------------------- */
+if(new URLSearchParams(location.search).get('demo')==='1'){
+  session={id:'demo',name:'Demo Party',is_active:true,votes_per_user_mode:'absolute',
+    votes_per_user_value:3,skip_vote_mode:'absolute',skip_vote_threshold:4,
+    current_track_id:'d1',current_track_title:'Sweet September',
+    current_track_artist:'Tony Christie',is_playing:true,upcoming:[]};
+  myId='demo-me';
+  tracks=[
+    {id:'a',track_id:'a',title:'Bluebird',artist:'Nate Smith & Avril Lavigne',vote_count:31},
+    {id:'b',track_id:'b',title:'Everything I Wanted (Live From The Bowl)',artist:'Billie Eilish',vote_count:25},
+    {id:'c',track_id:'c',title:'Murder On The Dancefloor',artist:'Sophie Ellis-Bextor',vote_count:18},
+    {id:'d',track_id:'d',title:'Africa',artist:'Toto',vote_count:9},
+  ];
+  maxVotes=3; myVotes=new Set(['a']);
+  skipVotes=2; guestCount=7; iSkipped=false;
+  $('join').style.display='none'; $('vote').style.display='block';
+  $('partyName').textContent=session.name;
+  $('leadBtn').hidden=false;
+  render(); renderNP(); renderSkip();
 }
 
 function subscribe(){
   sb.channel('t-'+session.id).on('postgres_changes',{event:'*',schema:'public',table:'session_tracks',filter:'session_id=eq.'+session.id},
     ()=>{clearTimeout(refetchT);refetchT=setTimeout(async()=>{await loadTracks();await loadMyVotes();render();renderNP();},350);}).subscribe();
   sb.channel('s-'+session.id).on('postgres_changes',{event:'UPDATE',schema:'public',table:'sessions',filter:'id=eq.'+session.id},
-    p=>{session={...session,...p.new};maxVotes=calcMax();render();renderNP();}).subscribe();
+    p=>{session={...session,...p.new};maxVotes=calcMax();render();renderNP();loadSkip();}).subscribe();
   sb.channel('v-'+session.id).on('postgres_changes',{event:'*',schema:'public',table:'votes',filter:'session_id=eq.'+session.id},
     ()=>{clearTimeout(refetchT);refetchT=setTimeout(async()=>{await loadMyVotes();render();},400);}).subscribe();
+  // Skip votes are their own table — without this the count only moved on a page reload.
+  sb.channel('sk-'+session.id).on('postgres_changes',{event:'*',schema:'public',table:'skip_votes',filter:'session_id=eq.'+session.id},
+    ()=>{clearTimeout(window._skT);window._skT=setTimeout(loadSkip,300);}).subscribe();
 }
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
