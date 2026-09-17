@@ -170,7 +170,7 @@
   @media(max-width:820px){.steps,.feat{grid-template-columns:1fr}section{padding:60px 0}header.hero{padding:64px 0 24px}.shot{width:220px}.vgrid{grid-template-columns:1fr;max-width:330px}}
 
 .tvshot{border-radius:18px;overflow:hidden;box-shadow:0 26px 70px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.09)}
-.tvshot img{display:block;width:100%;height:auto}
+.tvshot img,.tvshot video{display:block;width:100%;height:auto}
 .tvpair{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:22px}
 .tvpair figure{margin:0}
 .tvpair img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid rgba(255,255,255,.09);box-shadow:0 14px 40px rgba(0,0,0,.45)}
@@ -264,7 +264,15 @@
     <p class="lead">A free Apple TV app shows the whole room what's playing, what's next, and who's winning — while your music keeps playing from your phone.</p>
 
     <div class="tvshot">
-      <img src="assets/tv_party.jpg" alt="Jukebox on an Apple TV at a house party, showing the now playing song, the voting queue and a join QR code" loading="lazy">
+      <!-- Muted and autoplaying, so it loops as a moving still. The poster is the photo
+           the clip was made from, so a slow connection or a browser that blocks autoplay
+           shows exactly what it showed before. -->
+      <video autoplay muted loop playsinline preload="none"
+             poster="assets/tv_party.jpg"
+             aria-label="Jukebox on an Apple TV at a house party, showing the now playing song, the voting queue and a join QR code">
+        <source src="assets/tv_party.mp4" type="video/mp4">
+        <img src="assets/tv_party.jpg" alt="Jukebox on an Apple TV at a house party, showing the now playing song, the voting queue and a join QR code" loading="lazy">
+      </video>
     </div>
 
     <div class="feat" style="margin-top:28px">
