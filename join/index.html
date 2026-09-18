@@ -127,6 +127,28 @@
 .getapp .gs{font-size:12px;color:var(--muted);line-height:1.25}
 .getapp .go{margin-left:auto;font-weight:700;font-size:13px;white-space:nowrap}
 #join .getapp{margin-top:22px}
+  /* synced lyrics, under Now Playing */
+  .lyr{padding:0 16px 10px;text-align:center;min-height:0;transition:min-height .2s}
+  .lyr.on{min-height:44px}
+  .lyr .l1{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lyr .l2{font-size:13px;color:var(--muted);line-height:1.3;margin-top:2px;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* request a song */
+  .reqbtn{display:block;width:100%;margin:8px 0 2px;padding:12px;border-radius:14px;font-size:14px;
+          font-weight:700;color:var(--text);background:var(--card2);border:1px solid var(--line)}
+  .reqpanel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0 2px}
+  .reqpanel .searchbar{margin:0 0 10px}
+  .reqrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .reqrow:first-child{border-top:0}
+  .reqrow img{width:42px;height:42px;border-radius:7px;flex:0 0 auto;background:var(--card2)}
+  .reqrow .m{min-width:0;flex:1}
+  .reqrow .m b{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .reqrow .m span{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .reqrow button{flex:0 0 auto;padding:8px 14px;border-radius:999px;border:0;font-size:13px;font-weight:700;
+                 color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  .reqrow button[disabled]{opacity:.45}
+  .reqhint{font-size:12px;color:var(--muted);text-align:center;padding:8px 0 2px}
 </style>
 </head>
 <body>
@@ -156,6 +178,7 @@
       </div>
       <div class="eq"><span></span><span></span><span></span></div>
     </div>
+    <div class="lyr" id="lyr"><div class="l1" id="lyr1"></div><div class="l2" id="lyr2"></div></div>
     <button id="skipBtn" class="skipbtn" hidden><span id="skipLbl">Vote to skip</span><span class="skipn" id="skipN"></span></button>
     <div class="np" id="npIdle"><div class="lbl" style="color:var(--muted)" data-i18n="nothing">Nothing playing right now</div></div>
   </div>
@@ -174,6 +197,17 @@
     <button id="leadBtn" class="leadbtn" hidden>🏆 <span data-i18n="leaders">Top voters</span></button>
     <div id="leadPanel" class="leadpanel" hidden><div id="leadList"></div>
       <button id="leadClose" class="leadclose" data-i18n="close">Close</button></div>
+    <button id="reqBtn" class="reqbtn" hidden>＋ <span data-i18n="reqTitle">Request a song</span></button>
+    <div id="reqPanel" class="reqpanel" hidden>
+      <div class="searchbar">
+        <span class="mag">🔎</span>
+        <input id="reqQ" type="search" data-i18n-ph="reqSearch" placeholder="Search for any song" autocomplete="off"
+               autocorrect="off" spellcheck="false" aria-label="Search for a song to request">
+      </div>
+      <div id="reqList"></div>
+      <div class="reqhint" id="reqHint"></div>
+      <button id="reqClose" class="leadclose" data-i18n="close">Close</button>
+    </div>
     <a class="getapp" href="https://apps.apple.com/app/apple-store/id6757018633?pt=123677905&amp;ct=Site&amp;mt=8"><img src="../assets/icon.png" alt=""><div><div class="gt" data-i18n="getTitle">Get Jukebox on iPhone</div><div class="gs" data-i18n="getSub">Host your own party, and vote without a browser</div></div><div class="go" data-i18n="get">Get →</div></a>
   </div>
 </div>
@@ -198,7 +232,13 @@ const sb=createClient(URL,KEY);
    one file.
 --------------------------------------------------------------------------- */
 const I18N = {
-  en:{join:"Join Party",joining:"Joining…",sub:"Join the party and vote on what plays next.",
+  en:{reqTitle:"Request a song",reqSearch:"Search for any song",
+      reqPrompt:"Search for a song to add to this party.",
+      reqNone:"No songs found.",reqAdd:"Request",reqSending:"Sending…",
+      reqSent:"Sent to the host.",reqAdded:"Added to the queue.",
+      reqFailed:"Could not send that request.",reqInQueue:"That song is already in the queue.",
+      reqExplicit:"The host turned explicit songs off.",instrumental:"Instrumental",
+      join:"Join Party",joining:"Joining…",sub:"Join the party and vote on what plays next.",
       code:"CODE",yourName:"Your name (optional)",enterCode:"Enter the party code.",
       notFound:"Party not found. Check the code.",couldNotJoin:"Could not join",
       tv:"Showing this on a TV?",openDisplay:"Open Party Display →",
@@ -526,7 +566,160 @@ function renderNP(){
     $('npTitle').textContent=t;
     $('npArtist').textContent=a||'';
   }else{ $('np').style.display='none'; $('npIdle').style.display='flex'; }
+  fetchLyrics(t,a);
+  showRequestButton();
 }
+
+
+/* ── Synced lyrics ─────────────────────────────────────────────────────────
+   Same source and the same maths as the TV display page: LRCLib for the
+   words, and a position derived from what the host writes to the session row.
+   The guest's browser plays no audio, so there is nothing local to sync to —
+   `track_started_at` is the only clock everyone shares. */
+let lyrics=[], lyricsSynced=false, lyricsKey=null;
+
+function position(){
+  if(!session) return 0;
+  if(session.is_playing && session.track_started_at){
+    return (Date.now()-new Date(session.track_started_at).getTime())/1000;
+  }
+  return session.playback_position||0;
+}
+
+async function fetchLyrics(title,artist){
+  const key=(title||'')+'|'+(artist||'');
+  if(key===lyricsKey) return;
+  lyricsKey=key; lyrics=[]; lyricsSynced=false;
+  $('lyr1').textContent=''; $('lyr2').textContent=''; $('lyr').classList.remove('on');
+  if(!title||!artist) return;
+  try{
+    const u='https://lrclib.net/api/get?'+new URLSearchParams({track_name:title,artist_name:artist});
+    const r=await fetch(u); if(!r.ok) return;
+    const d=await r.json();
+    if(d.instrumental){ $('lyr1').textContent='♪ '+t('instrumental'); $('lyr').classList.add('on'); return; }
+    if(d.syncedLyrics){
+      lyrics=d.syncedLyrics.split('\n').map(l=>{
+        const m=l.match(/\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)/);
+        return m?{time:+m[1]*60+parseFloat(m[2]),text:m[3]}:null;
+      }).filter(x=>x&&x.text);
+      lyricsSynced=lyrics.length>0;
+      if(lyricsSynced) $('lyr').classList.add('on');
+    } else if(d.plainLyrics){
+      // Unsynced words are worse than none on a phone: they cannot follow the
+      // song, so they read as wrong rather than as a lyric sheet.
+      lyricsKey=key;
+    }
+  }catch(e){}
+}
+
+function lyricTick(){
+  if(!lyricsSynced||!lyrics.length){ return; }
+  const p=position();
+  let i=-1;
+  for(let k=0;k<lyrics.length;k++){ if(lyrics[k].time<=p) i=k; else break; }
+  $('lyr1').textContent = i>=0 ? lyrics[i].text : '';
+  $('lyr2').textContent = (i>=0 && lyrics[i+1]) ? lyrics[i+1].text : '';
+}
+setInterval(lyricTick,250);
+
+/* ── Request a song ────────────────────────────────────────────────────────
+   Mirrors `SongRequestView` in the app: search the public iTunes catalogue,
+   then write a row to `song_requests`. When the host has auto-approve on, the
+   `auto_approve_song_request` RPC puts it straight in the queue — that RPC is
+   already granted to `anon`, which is why a browser guest can do this at all.
+
+   The duplicate and explicit checks are the app's rules, repeated here. A
+   guest who is told "sent" and then never sees the song has learnt nothing. */
+let reqQuery='', reqTask=null, reqResults=[], reqSending=null;
+
+function showRequestButton(){
+  const on = !!(session && session.allow_requests);
+  $('reqBtn').hidden = !on;
+  if(!on){ $('reqPanel').hidden = true; }
+}
+
+function reqSearch(q){
+  clearTimeout(reqTask);
+  if(!q.trim()){ reqResults=[]; renderReq(); return; }
+  reqTask=setTimeout(async()=>{
+    try{
+      const u='https://itunes.apple.com/search?'+new URLSearchParams(
+        {term:q,entity:'song',limit:'25'});
+      const r=await fetch(u); if(!r.ok) return;
+      const d=await r.json();
+      if(q!==reqQuery) return;                 // a newer keystroke won
+      reqResults=(d.results||[]).filter(x=>x.trackId&&x.trackName);
+      renderReq();
+    }catch(e){ $('reqHint').textContent=t('reqFailed'); }
+  },350);
+}
+
+function renderReq(){
+  const box=$('reqList');
+  if(!reqResults.length){ box.innerHTML=''; $('reqHint').textContent = reqQuery? t('reqNone') : t('reqPrompt'); return; }
+  $('reqHint').textContent='';
+  box.innerHTML=reqResults.map((s,i)=>{
+    const art=(s.artworkUrl100||'').replace('100x100','200x200');
+    const sending = reqSending===String(s.trackId);
+    return `<div class="reqrow">
+      <img src="${esc(art)}" alt="" loading="lazy">
+      <div class="m"><b>${esc(s.trackName)}</b><span>${esc(s.artistName||'')}</span></div>
+      <button data-i="${i}" ${sending?'disabled':''}>${sending?esc(t('reqSending')):esc(t('reqAdd'))}</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('button[data-i]').forEach(b=>{
+    b.onclick=()=>submitRequest(reqResults[+b.dataset.i]);
+  });
+}
+
+async function submitRequest(s){
+  if(!s||!session||!myId) return;
+  const trackId=String(s.trackId);
+  const explicit=(s.trackExplicitness||'')==='explicit';
+
+  if(session.allow_explicit===false && explicit){ toast(t('reqExplicit')); return; }
+  if(tracks.some(x=>String(x.track_id)===trackId)){ toast(t('reqInQueue')); return; }
+
+  reqSending=trackId; renderReq();
+  const row={
+    session_id: session.id,
+    requester_id: myId,
+    track_id: trackId,
+    title: s.trackName,
+    artist: s.artistName||'',
+    album: s.collectionName||null,
+    artwork_url:(s.artworkUrl100||'').replace('100x100','600x600')||null,
+    is_explicit: explicit
+  };
+  try{
+    const {data,error}=await sb.from('song_requests').insert(row).select('id').single();
+    if(error) throw error;
+    if(session.auto_approve_requests){
+      const {error:re}=await sb.rpc('auto_approve_song_request',{
+        p_request_id:data.id, p_session_id:session.id, p_requester_id:myId,
+        p_track_id:trackId, p_title:row.title, p_artist:row.artist,
+        p_album:row.album, p_artwork_url:row.artwork_url, p_is_explicit:explicit});
+      if(re) throw re;
+      toast(t('reqAdded'));
+      await loadTracks(); render();
+    } else {
+      toast(t('reqSent'));
+    }
+    $('reqQ').value=''; reqQuery=''; reqResults=[]; renderReq();
+  }catch(e){
+    toast(t('reqFailed'));
+  }finally{
+    reqSending=null; renderReq();
+  }
+}
+
+$('reqBtn').onclick=()=>{
+  const open=$('reqPanel').hidden;
+  $('reqPanel').hidden=!open;
+  if(open){ $('reqHint').textContent=t('reqPrompt'); $('reqQ').focus(); }
+};
+$('reqClose').onclick=()=>{ $('reqPanel').hidden=true; };
+$('reqQ').oninput=e=>{ reqQuery=e.target.value; reqSearch(reqQuery); };
 
 async function toggleVote(t){
   const remaining=Math.max(0,maxVotes-myVotes.size);
@@ -626,8 +819,12 @@ $('leadClose').addEventListener('click',()=>{$('leadPanel').hidden=true;});
 if(new URLSearchParams(location.search).get('demo')==='1'){
   session={id:'demo',name:'Demo Party',is_active:true,votes_per_user_mode:'absolute',
     votes_per_user_value:3,skip_vote_mode:'absolute',skip_vote_threshold:4,
-    current_track_id:'d1',current_track_title:'Sweet September',
-    current_track_artist:'Tony Christie',is_playing:true,upcoming:[]};
+    current_track_id:'d1',current_track_title:'Lean On Me',
+    current_track_artist:'Bill Withers',is_playing:true,upcoming:[],
+    // A real song, started 40s ago, so the LRCLib fetch and the synced line are
+    // both exercised rather than sitting at 0:00 before the first lyric.
+    track_started_at:new Date(Date.now()-40000).toISOString(),
+    allow_requests:true,auto_approve_requests:false,allow_explicit:true};
   myId='demo-me';
   tracks=[
     {id:'a',track_id:'a',title:'Bluebird',artist:'Nate Smith & Avril Lavigne',vote_count:31},
@@ -641,6 +838,12 @@ if(new URLSearchParams(location.search).get('demo')==='1'){
   $('partyName').textContent=session.name;
   $('leadBtn').hidden=false;
   render(); renderNP(); renderSkip();
+  // ?demo=1&req=1 opens the request panel, which is otherwise a tap away and so
+  // never appears in a headless screenshot.
+  if(new URLSearchParams(location.search).get('req')==='1'){
+    $('reqPanel').hidden=false; $('reqQ').value='lean on me';
+    reqQuery='lean on me'; reqSearch(reqQuery);
+  }
 }
 
 function subscribe(){
