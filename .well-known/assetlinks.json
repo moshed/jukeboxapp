@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.DNZ.jukebox",
+    "sha256_cert_fingerprints": ["B8:33:72:1D:A5:50:C0:79:24:76:16:0E:86:1A:27:79:A9:8E:61:BF:3F:A5:8A:93:72:B6:D0:D6:79:C7:25:15"]
+  }
+}]
